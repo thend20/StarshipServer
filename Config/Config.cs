@@ -54,6 +54,26 @@ namespace com.avilance.Starrybound
             return StarryboundServer.rulesData;
         }
 
+        public static int[] GetSpamSettings()
+        {
+            if (!StarryboundServer.config.enableSpamProtection) return new int[] { 0, 0 };
+
+            string[] spamSplit = StarryboundServer.config.spamInterval.Split(':');
+
+            try
+            {
+                int numMessages = int.Parse(spamSplit[0]);
+                int numSeconds = int.Parse(spamSplit[1]);
+
+                return new int[] { numMessages, numSeconds };
+            }
+            catch (Exception e)
+            {
+                StarryboundServer.logError("Unable to read settings for anti-spam system - Is it in numMessages:numSeconds format?");
+                return new int[] { 0, 0 };
+            }
+        }
+
         public static void SetupConfig()
         {
             CreateIfNot(RulesPath, "1) Respect all players 2) No griefing/hacking 3) Have fun!");
@@ -96,6 +116,9 @@ namespace com.avilance.Starrybound
         public bool allowSpaces = true;
         public bool allowSymbols = false;
         public string[] bannedUsernames = new string[] { "admin", "developer", "moderator", "owner" };
+
+        public bool enableSpamProtection = true;
+        public string spamInterval = "3:2";
 
         public bool freeFuelForNewPlayers = true;
         public string[] starterItems = new string[] { "" };
