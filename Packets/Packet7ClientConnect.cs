@@ -99,7 +99,7 @@ namespace com.avilance.Starrybound.Packets
                 }
             }
 
-            if (userPData.getGroup().hasPermission("admin.bypassban"))
+            if (!userPData.getGroup().hasPermission("admin.bypassban"))
             {
                 foreach (string bannedUnamePhrase in StarryboundServer.config.bannedUsernames)
                 {
