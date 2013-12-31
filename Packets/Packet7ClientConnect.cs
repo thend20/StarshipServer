@@ -136,6 +136,9 @@ namespace com.avilance.Starrybound.Packets
                 pData.group = userPData.getGroup();
                 pData.freeFuel = userPData.freeFuel;
                 pData.receivedStarterKit = userPData.receivedStarterKit;
+                pData.privateShip = userPData.privateShip;
+                pData.shipBlacklist = userPData.shipBlacklist;
+                pData.shipWhitelist = userPData.shipWhitelist;
 
                 if (userPData.uuid != pData.uuid)
                 {
