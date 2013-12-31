@@ -96,8 +96,8 @@ namespace com.avilance.Starrybound
                 }
 
                 sSocket = new TcpClient();
-                sSocket.ReceiveTimeout = StarryboundServer.config.internalSocketTimeout;
-                sSocket.SendTimeout = StarryboundServer.config.internalSocketTimeout;
+                sSocket.ReceiveTimeout = StarryboundServer.config.internalSocketTimeout * 1000;
+                sSocket.SendTimeout = StarryboundServer.config.internalSocketTimeout * 1000;
                 IAsyncResult result = sSocket.BeginConnect(IPAddress.Loopback, StarryboundServer.config.serverPort, null, null);
                 bool success = result.AsyncWaitHandle.WaitOne(3000, true);
                 if (!success || !sSocket.Connected)
