@@ -135,6 +135,11 @@ namespace com.avilance.Starrybound
 
         public string[] projectileBlacklist = new string[] { "" };
         public string[] projectileBlacklistSpawn = new string[] { "" };
+        public bool projectileSpawnListIsWhitelist = false;
+
+        public int connectTimeout = 5;
+        public int internalSocketTimeout = 5;
+        public int clientSocketTimeout = 15;
 
         public bool enableCallback = true;
         
