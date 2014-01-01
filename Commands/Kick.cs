@@ -34,14 +34,26 @@ namespace com.avilance.Starrybound.Commands
         {
             if (!hasPermission()) { permissionError(); return false; }
 
-            string player = string.Join(" ", args).Trim();
+            string player;
+            string reason;
+
+            if (args.Length > 1)
+            {
+                player = args[0].Trim();
+                reason = string.Join(" ", args).Substring(player.Length + 2).Trim();
+            }
+            else
+            {
+                player = string.Join(" ", args).Trim();
+                reason = "breaking the rules";
+            }
 
             if (player == null || player.Length < 1) { showHelpText(); return false; }
 
             Client target = StarryboundServer.getClient(player);
             if (target != null)
             {
-                target.kickClient(null);
+                target.kickClient(reason);
                 return true;
             }
             else

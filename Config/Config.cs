@@ -99,6 +99,46 @@ namespace com.avilance.Starrybound
         }
     }
 
+    class SpamAction
+    {
+        public string actionName;
+        public string reason;
+        public int length;
+        public int countToTrigger;
+
+        public bool checkTrigger(int count, Client client)
+        {
+            if (count == countToTrigger)
+            {
+                PlayerData player = client.playerData;
+
+                switch (actionName)
+                {
+                    case "mute":
+                        player.isMuted = true;
+                        StarryboundServer.sendGlobalMessage("^#f75d5d;" + player.name + " has been muted automatically for spamming.");
+                        break;
+
+                    case "kick":
+                        client.kickClient(reason);
+                        break;
+
+                    case "ban":
+                        if (length != 0) length = Utils.getTimestamp() + (length * 60);
+
+                        Bans.addNewBan(player.name, player.uuid, player.ip, Utils.getTimestamp(), "[SYSTEM]", length, reason);
+
+                        client.banClient(reason);
+                        break;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     class ConfigFile
     {
         [Description("")]

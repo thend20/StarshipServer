@@ -221,7 +221,7 @@ namespace com.avilance.Starrybound
 
         public void kickClient(string reason)
         {
-            delayDisconnect("You have been kicked from the server for " + reason + ".", this.playerData.name + " has been kicked from the server!");
+            delayDisconnect("You have been kicked from the server for " + reason + ".", this.playerData.name + " has been kicked from the server for " + reason + "!");
         }
 
         public void kickClient()
