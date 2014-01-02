@@ -103,7 +103,7 @@ namespace com.avilance.Starrybound.Packets
             {
                 foreach (string bannedUnamePhrase in StarryboundServer.config.bannedUsernames)
                 {
-                    if (this.client.playerData.name.Contains(bannedUnamePhrase))
+                    if (this.client.playerData.name.ToLower().Contains(bannedUnamePhrase.ToLower()))
                     {
                         this.client.rejectPreConnected("Your name contains a phrase that is banned on this server. (" + bannedUnamePhrase + ")");
                         return false;
