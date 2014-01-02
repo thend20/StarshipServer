@@ -45,6 +45,8 @@ namespace com.avilance.Starrybound
         public int kickTargetTimestamp = 0;
         public bool connectionAlive { get { if (this.cSocket.Connected && this.sSocket.Connected && this.state != ClientState.Disposing) return true; else return false; } }
 
+        public List<Packet11ChatSend> packetQueue = new List<Packet11ChatSend>();
+
         public Client(TcpClient aClient)
         {
             this.cSocket = aClient;
@@ -211,7 +213,8 @@ namespace com.avilance.Starrybound
             if (state != ClientState.Connected) return;
             Packet11ChatSend packet = new Packet11ChatSend(this, Util.Direction.Client);
             packet.prepare(context, world, clientID, name, message);
-            packet.onSend();
+
+            this.packetQueue.Add(packet);
         }
 
         public void banClient(string reason)

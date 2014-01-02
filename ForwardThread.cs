@@ -557,6 +557,15 @@ namespace com.avilance.Starrybound
                     this.outgoing.Flush();
                     #endregion
 
+                    #region Inject from Packet Queue
+                    foreach (Packet11ChatSend chatPacket in this.client.packetQueue)
+                    {
+                        chatPacket.onSend();
+                    }
+
+                    this.client.packetQueue = new List<Packet11ChatSend>();
+                    #endregion
+
                     //If disconnect was forwarded to client, lets disconnect.
                     if(packetID == Packet.ServerDisconnect && direction == Direction.Server)
                     {
