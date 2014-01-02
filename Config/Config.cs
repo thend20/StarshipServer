@@ -97,6 +97,42 @@ namespace com.avilance.Starrybound
             StarryboundServer.logDebug("SetupConfig", "This was compiled in DEBUG, forcing debug logging!");
 #endif
         }
+
+        public static bool ReloadMOTD()
+        {
+            try
+            {
+                StarryboundServer.motdData = ReadConfigFile(MotdPath);
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
+
+        public static bool ReloadRules()
+        {
+            try
+            {
+                StarryboundServer.rulesData = ReadConfigFile(RulesPath);
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
+
+        public static bool ReloadConfig()
+        {
+            try
+            {
+                ConfigFile config;
+
+                if (File.Exists(ConfigPath)) config = ConfigFile.Read(ConfigPath);
+                else throw new FileNotFoundException();
+
+                if (config.Equals(new ConfigFile())) return false;
+
+                return true;
+            }
+            catch (Exception) { return false; }
+        }
     }
 
     class SpamAction
@@ -161,7 +197,7 @@ namespace com.avilance.Starrybound
         public string spamInterval = "3:2";
 
         public bool freeFuelForNewPlayers = true;
-        public string[] starterItems = new string[] { "" };
+        public string[] starterItems = new string[] { };
 
         public bool spawnWorldProtection = false;
         public string buildErrorMessage = "You do not have permission to build on this server. You can apply for build rights on our forum.";
@@ -173,8 +209,8 @@ namespace com.avilance.Starrybound
         public bool enableGeoIP = false;
         public int maxFailedConnections = 3;
 
-        public string[] projectileBlacklist = new string[] { "" };
-        public string[] projectileBlacklistSpawn = new string[] { "" };
+        public string[] projectileBlacklist = new string[] { };
+        public string[] projectileBlacklistSpawn = new string[] { };
         public bool projectileSpawnListIsWhitelist = false;
 
         public int connectTimeout = 5;

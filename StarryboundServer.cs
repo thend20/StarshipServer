@@ -472,6 +472,16 @@ namespace com.avilance.Starrybound
             return result;
         }
 
+        public static List<Client> getClients(string groupName)
+        {
+            List<Client> result = new List<Client>();
+            foreach (Client client in clients.Values.ToList())
+            {
+                if (client.playerData.group.name.Equals(groupName)) result.Add(client);
+            }
+            return result;
+        }
+
         public static Client getClient(string name)
         {
             Client result;
