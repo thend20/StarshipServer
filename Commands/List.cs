@@ -59,7 +59,7 @@ namespace com.avilance.Starrybound.Commands
 
             foreach (Client staffMember in this.staffList)
             {
-                staffListO = staffListO + staffMember.playerData.formatName + "^#5dc4f4;";
+                staffListO = staffListO + "^shadow,yellow;" + staffMember.playerData.formatName + "^#5dc4f4;";
                 if (i != staffList.Count - 1) staffListO = staffListO + ", ";
                 i++;
             }
@@ -68,7 +68,7 @@ namespace com.avilance.Starrybound.Commands
 
             foreach (Client player in this.userList)
             {
-                userListO = userListO + player.playerData.formatName + "^#5dc4f4;";
+                userListO = userListO + "^shadow,yellow;" + player.playerData.formatName + "^#5dc4f4;";
                 if (i != userList.Count - 1) userListO = userListO + ", ";
                 i++;
             }
