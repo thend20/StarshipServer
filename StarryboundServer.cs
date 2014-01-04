@@ -396,6 +396,16 @@ namespace com.avilance.Starrybound
                 catch (Exception) { }
 
                 logInfo("Graceful shutdown complete.");
+
+                logDebug("Shutdown", "Flushing all pending log data to file (If any)");
+                using (StreamWriter w = File.AppendText(Path.Combine(SavePath, "log.txt")))
+                {
+                    for (int i = 0; i < logWriteBuffer.Count; i++)
+                    {
+                        w.WriteLine(logWriteBuffer[i]);
+                        logWriteBuffer.RemoveAt(i);
+                    }
+                }
             }
             catch(Exception e)
             {
