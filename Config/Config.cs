@@ -206,6 +206,8 @@ namespace com.avilance.Starrybound
 
         public bool allowModdedClients = true;
 
+        public bool attemptAutoRestart = true;
+
         public bool enableGeoIP = false;
         public int maxFailedConnections = 3;
 

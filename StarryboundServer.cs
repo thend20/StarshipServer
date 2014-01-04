@@ -291,11 +291,9 @@ namespace com.avilance.Starrybound
         private static void doRestart()
         {
             doShutdown(false);
-            if (IsMono)
-            {
-                logWarn("Auto Restarter doesn't support Mono. Exiting.");
-                Environment.Exit(0);
-            }
+
+            if (!config.attemptAutoRestart) Environment.Exit(0);
+
             logInfo("Now restarting...");
             Thread.Sleep(2500);
             if (serverState == ServerState.Shutdown || serverState == ServerState.GracefulShutdown)
@@ -303,7 +301,16 @@ namespace com.avilance.Starrybound
                 logWarn("Something requested shutdown while restarting. Exiting.");
                 Environment.Exit(1);
             }
-            Process.Start(Assembly.GetEntryAssembly().Location);
+
+            try
+            {
+                Process.Start(Assembly.GetEntryAssembly().Location);
+            }
+            catch (Exception e)
+            {
+                if (IsMono) logWarn("Auto Restarter was unable to complete successfully via this version of Mono. Exception: " + e.ToString());
+                else logWarn("Auto Restarter encountered an error while attempting to restart. Exception: " + e.ToString());
+            }
             Environment.Exit(0);
         }
 
