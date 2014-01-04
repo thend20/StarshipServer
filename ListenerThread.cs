@@ -101,62 +101,75 @@ namespace com.avilance.Starrybound
             }
         }
 
-        private void SourceRequest(byte[] data, int bytesRead, EndPoint remote)
+        private void SourceRequest(byte[] data, EndPoint remote)
         {
             byte headerByte = data[4];
-            byte[] dataArray = new byte[bytesRead - 5];
+            byte[] dataArray = new byte[data.Length - 6]; // 25 bytes - 5 bytes = 20 bytes
 
             switch (headerByte)
             {
                 case 0x54:
-                    Buffer.BlockCopy(data, 5, dataArray, 0, bytesRead - 6);
+                    Buffer.BlockCopy(data, 5, dataArray, 0, dataArray.Length);
 
-                    string text = Encoding.UTF8.GetString(dataArray, 0, dataArray.Length).Trim();
+                    StarryboundServer.logInfo("RCON: Bytes available are " + dataArray.Length + ", so taking 19 of those");
+                    StarryboundServer.logError("RCON: Binary data: " + Utils.ByteArrayToString(dataArray));
+
+                    string text = Encoding.UTF8.GetString(dataArray);
                     string needle = "Source Engine Query";
 
                     if (text != needle)
                     {
                         StarryboundServer.logError("RCON: Received invalid A2S_INFO request: " + text + " is invalid.");
+                        StarryboundServer.logError("RCON: Binary data: " + Utils.ByteArrayToString(dataArray));
                         StarryboundServer.logError("RCON: Length received " + text.Length + " but expected " + needle.Length);
                         return;
                     }
+                    else StarryboundServer.logDebug("ListenerThread::SourceRequest", "RCON: Matched A2S_INFO request!");
 
-                    byte header = 0x49;
-                    byte protocol = 0x02;
-                    byte[] name = encodeString("A Starrybound Server");
-                    byte[] map = encodeString("Starbound");
-                    byte[] folder = encodeString("na");
-                    byte[] game = encodeString("Starbound");
-                    byte appID = Convert.ToByte(211820);
-                    byte players = Convert.ToByte(StarryboundServer.clientCount);
-                    byte maxplayers = Convert.ToByte(StarryboundServer.config.maxClients);
-                    byte bots = Convert.ToByte(0);
-                    byte servertype = Convert.ToByte("d");
-                    byte environment = Convert.ToByte((StarryboundServer.IsMono ? 'l' : 'w'));
-                    byte visibility = Convert.ToByte((StarryboundServer.config.proxyPass == "" ? 0 : 1));
-                    byte vac = Convert.ToByte(0);
-                    byte[] version = encodeString(StarryboundServer.starboundVersion.Name);
+                    try
+                    {
+                        byte header = 0x49;
+                        byte protocol = 0x02;
+                        byte[] name = encodeString("A Starrybound Server");
+                        byte[] map = encodeString("Starbound");
+                        byte[] folder = encodeString("na");
+                        byte[] game = encodeString("Starbound");
+                        byte[] appID = BitConverter.GetBytes(211820);
+                        byte[] players = BitConverter.GetBytes(StarryboundServer.clientCount);
+                        byte[] maxplayers = BitConverter.GetBytes(StarryboundServer.config.maxClients);
+                        byte bots = Convert.ToByte(0);
+                        byte[] servertype = encodeString("d");
+                        byte environment = Convert.ToByte((StarryboundServer.IsMono ? 'l' : 'w'));
+                        byte visibility = Convert.ToByte((StarryboundServer.config.proxyPass == "" ? 0 : 1));
+                        byte vac = Convert.ToByte(0);
+                        byte[] version = encodeString(StarryboundServer.starboundVersion.Name);
 
-                    var s = new MemoryStream();
-                    s.WriteByte(header);
-                    s.WriteByte(protocol);
-                    s.Write(name, 0, name.Length);
-                    s.Write(map, 0, map.Length);
-                    s.Write(folder, 0, folder.Length);
-                    s.Write(game, 0, game.Length);
-                    s.WriteByte(appID);
-                    s.WriteByte(players);
-                    s.WriteByte(maxplayers);
-                    s.WriteByte(bots);
-                    s.WriteByte(servertype);
-                    s.WriteByte(environment);
-                    s.WriteByte(visibility);
-                    s.WriteByte(vac);
-                    s.Write(version, 0, version.Length);
+                        var s = new MemoryStream();
+                        s.WriteByte(header);
+                        s.WriteByte(protocol);
+                        s.Write(name, 0, name.Length);
+                        s.Write(map, 0, map.Length);
+                        s.Write(folder, 0, folder.Length);
+                        s.Write(game, 0, game.Length);
+                        s.Write(appID, 0, appID.Length);
+                        s.Write(players, 0, players.Length);
+                        s.Write(maxplayers, 0, maxplayers.Length);
+                        s.WriteByte(bots);
+                        s.Write(servertype, 0, servertype.Length);
+                        s.WriteByte(environment);
+                        s.WriteByte(visibility);
+                        s.WriteByte(vac);
+                        s.Write(version, 0, version.Length);
 
-                    StarryboundServer.logInfo("RCON: Sending A2S_INFO Response packet to " + remote);
-
-                    udpSocket.SendTo(s.ToArray(), remote);
+                        StarryboundServer.logInfo("RCON: Sending A2S_INFO Response packet to " + remote);
+                        StarryboundServer.logInfo("RCON: Dumping packet: " + Utils.ByteArrayToString(s.ToArray()));
+                        udpSocket.SendTo(s.ToArray(), remote);
+                    }
+                    catch (Exception e)
+                    {
+                        StarryboundServer.logError("RCON: Unable to send data to stream! An error occurred. ");
+                        StarryboundServer.logError("RCON: " + e.ToString());
+                    }
                     break;
             }
         }
@@ -166,10 +179,14 @@ namespace com.avilance.Starrybound
             return Encoding.UTF8.GetBytes(data);
         }
 
-        private void OnReceive(byte[] data, int bytesRead, EndPoint remote)
+        private void OnReceive(byte[] dataBuffer, int bytesRead, EndPoint remote)
         {
+            byte[] data = new byte[bytesRead];
+
             try
             {
+                Buffer.BlockCopy(dataBuffer, 0, data, 0, bytesRead);
+
                 /*
                  * Source Query packets begin with 0xFF (x4)
                  */
@@ -180,7 +197,7 @@ namespace com.avilance.Starrybound
 
                     if (sourceCheck.SequenceEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }))
                     {
-                        SourceRequest(data, bytesRead, remote);
+                        SourceRequest(data, remote);
                         return;
                     }
                     else
@@ -197,6 +214,7 @@ namespace com.avilance.Starrybound
             catch (Exception e)
             {
                 StarryboundServer.logError("Bad RCON request received. " + e.ToString());
+                StarryboundServer.logError("RCON: Binary data: " + Utils.ByteArrayToString(data));
             }
         }
     }
