@@ -22,7 +22,7 @@ namespace com.avilance.Starrybound.Commands
         public Kick(Client client)
         {
             this.name = "kick";
-            this.HelpText = " <username>: Kicks the user from the server.";
+            this.HelpText = " <username> (reason): Kicks the user from the server for specified or, if not defined, default reason.";
             this.Permission = new List<string>();
             this.Permission.Add("admin.kick");
 
@@ -40,7 +40,7 @@ namespace com.avilance.Starrybound.Commands
             if (args.Length > 1)
             {
                 player = args[0].Trim();
-                reason = string.Join(" ", args).Substring(player.Length + 2).Trim();
+                reason = string.Join(" ", args).Substring(player.Length + 1).Trim();
             }
             else
             {

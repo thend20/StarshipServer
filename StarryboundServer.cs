@@ -53,9 +53,10 @@ namespace com.avilance.Starrybound
         public static Dictionary<string, Group> groups = new Dictionary<string, Group>();
 
         public static ServerThread sbServer;
-        public static ListenerThread tcpListener;
+        public static ListenerThread listener;
         static Thread sbServerThread;
         static Thread listenerThread;
+        static Thread udpThread;
         static Thread monitorThread;
 
         public static string privatePassword;
@@ -73,6 +74,8 @@ namespace com.avilance.Starrybound
 
         public static List<byte[]> sectors = new List<byte[]>();
         public static WorldCoordinate spawnPlanet;
+
+        public static List<string> logWriteBuffer = new List<string>();
 
         public static bool IsMono
         {
@@ -192,9 +195,13 @@ namespace com.avilance.Starrybound
 
             logInfo("Starrybound Server initialization complete.");
 
-            tcpListener = new ListenerThread();
-            listenerThread = new Thread(new ThreadStart(tcpListener.run));
+            listener = new ListenerThread();
+            listenerThread = new Thread(new ThreadStart(listener.runTcp));
             listenerThread.Start();
+
+            udpThread = new Thread(new ThreadStart(listener.runUdp));
+            udpThread.Start();
+
             while (serverState != ServerState.ListenerReady) { }
             if ((int)serverState > 3) return;
 
@@ -221,7 +228,26 @@ namespace com.avilance.Starrybound
             while (true)
             {
                 if (lastCount != clientCount && serverState == ServerState.Running)
-                    Console.Title = serverConfig.serverName + " (" + clientCount + "/" + config.maxClients + ") - Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")"; 
+                    Console.Title = serverConfig.serverName + " (" + clientCount + "/" + config.maxClients + ") - Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")";
+
+                if (logWriteBuffer.Count > 0)
+                {
+                    try
+                    {
+                        using (StreamWriter w = File.AppendText(Path.Combine(SavePath, "log.txt")))
+                        {
+                            for (int i = 0; i < logWriteBuffer.Count; i++)
+                            {
+                                w.WriteLine(logWriteBuffer[i]);
+                                logWriteBuffer.RemoveAt(i);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        if (config.logLevel == LogType.Debug) Console.WriteLine("[DEBUG] Logger Exception: " + e.ToString());
+                    }
+                }
 
                 if (restartTime != 0)
                 {
@@ -356,9 +382,14 @@ namespace com.avilance.Starrybound
                 logDebug("Shutdown", "Aborting TCP listener.");
                 try 
                 {
-                    lock (tcpListener.tcpSocket)
+                    lock (listener.tcpSocket)
                     {
-                        tcpListener.tcpSocket.Stop();
+                        listener.tcpSocket.Stop();
+                    }
+
+                    lock (listener.udpSocket)
+                    {
+                        listener.udpSocket.Close();
                         listenerThread.Abort();
                     }
                 }
@@ -423,17 +454,7 @@ namespace com.avilance.Starrybound
                     break;
             }
 
-            try
-            {
-                using (StreamWriter w = File.AppendText(Path.Combine(SavePath, "log.txt")))
-                {
-                    w.WriteLine(message);
-                }                
-            }
-            catch(Exception e) 
-            {
-                if (config.logLevel == LogType.Debug) Console.WriteLine("[DEBUG] Logger Exception: " + e.ToString());
-            }
+            logWriteBuffer.Add(message);
 
             if ((int)logType >= (int)config.logLevel) Console.WriteLine(message);
         }

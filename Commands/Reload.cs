@@ -63,6 +63,11 @@ namespace com.avilance.Starrybound.Commands
                     else this.client.sendCommandMessage("^#f75d5d;Reload has failed, the config.json file is missing or corrupt. Reload failed with errors.");
                     break;
 
+                case "bans":
+                    this.client.sendCommandMessage("Reloading all bans from file, this may take a moment...");
+                    reloadBans();
+                    break;
+
                 default:
                     this.client.sendCommandMessage("Invalid syntax. Use /reload help for instructions.");
                     break;
