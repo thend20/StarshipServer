@@ -109,7 +109,7 @@ namespace com.avilance.Starrybound
             switch (headerByte)
             {
                 case 0x54:
-                    Buffer.BlockCopy(data, 5, dataArray, 0, bytesRead - 5);
+                    Buffer.BlockCopy(data, 5, dataArray, 0, bytesRead - 6);
 
                     string text = Encoding.UTF8.GetString(dataArray, 0, dataArray.Length).Trim();
                     string needle = "Source Engine Query";
