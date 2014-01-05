@@ -97,7 +97,7 @@ namespace com.avilance.Starrybound
         public int bcryptRounds = 5000;
 
         [DataMember]
-        public string bind = "*";
+        public string bind = "0.0.0.0";
 
         [DataMember]
         public bool checkAssetsDigest = false;
