@@ -28,6 +28,8 @@ namespace com.avilance.Starrybound
         public Socket udpSocket;
         byte[] udpByteData = new byte[1024];
 
+        Dictionary<EndPoint, byte[]> challengeData = new Dictionary<EndPoint, byte[]>();
+
         public void runTcp()
         {
             try
@@ -104,11 +106,13 @@ namespace com.avilance.Starrybound
         private void SourceRequest(byte[] data, EndPoint remote)
         {
             byte headerByte = data[4];
-            byte[] dataArray = new byte[data.Length - 6]; // 25 bytes - 5 bytes = 20 bytes
+            byte[] dataArray;
 
             switch (headerByte)
             {
                 case 0x54:
+                    dataArray = new byte[data.Length - 6];
+
                     Buffer.BlockCopy(data, 5, dataArray, 0, dataArray.Length);
 
                     string text = Encoding.UTF8.GetString(dataArray);
@@ -125,7 +129,7 @@ namespace com.avilance.Starrybound
                     {
                         byte header = 0x49;
                         byte protocol = 0x02;
-                        byte[] name = encodeString(Config.GetMotd());
+                        byte[] name = encodeString(StarryboundServer.config.serverName);
                         byte[] map = encodeString("Starbound");
                         byte[] folder = encodeString("na");
                         byte[] game = encodeString("Starbound");
@@ -164,6 +168,62 @@ namespace com.avilance.Starrybound
                     {
                         StarryboundServer.logError("RCON: Unable to send data to stream! An error occurred.");
                         StarryboundServer.logError("RCON: " + e.ToString());
+                    }
+                    break;
+
+                case 0x55:
+                    StarryboundServer.logDebug("ListenerThread::SourceRequest", "RCON: Received A2S_PLAYER request from " + remote);
+
+                    dataArray = new byte[4];
+                    Buffer.BlockCopy(data, 5, dataArray, 0, dataArray.Length);
+
+                    if (dataArray.SequenceEqual(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }))
+                    {
+                        var buffer = new byte[4];
+                        new Random().NextBytes(buffer);
+
+                        if (challengeData.ContainsKey(remote)) challengeData.Remove(remote);
+                        challengeData.Add(remote, buffer);
+
+                        var s = new MemoryStream();
+                        s.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, 0, 4);
+                        s.WriteByte(0x41);
+                        s.Write(buffer, 0, 4);
+
+                        StarryboundServer.logInfo("RCON: Sending A2S_PLAYER Challenge Response packet to " + remote);
+                        udpSocket.SendTo(s.ToArray(), remote);
+                    }
+                    else
+                    {
+                        if (!challengeData.ContainsKey(remote)) StarryboundServer.logError("RCON: Illegal A2S_PLAYER request received from " + remote + ". No challenge number has been issued to this address.");
+                        else
+                        {
+                            var s = new MemoryStream();
+                            s.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, 0, 4);
+                            s.WriteByte(0x44);
+
+                            s.WriteByte(Convert.ToByte((uint)StarryboundServer.clientCount));
+
+                            List<Client> clientList = StarryboundServer.getClients();
+
+                            for (var i = 0; i < clientList.Count; i++)
+                            {
+                                Client client = clientList[i];
+                                s.WriteByte(Convert.ToByte((uint)i));
+
+                                byte[] name = encodeString(client.playerData.name);
+                                s.Write(name, 0, name.Length);
+
+                                byte[] score = BitConverter.GetBytes((long)0);
+                                s.Write(score, 0, score.Length);
+
+                                byte[] connected = BitConverter.GetBytes((float)0);
+                                s.Write(connected, 0, connected.Length);
+                            }
+
+                            StarryboundServer.logInfo("RCON: Sending A2S_PLAYER Response packet for " + StarryboundServer.clientCount + " player(s) to " + remote);
+                            udpSocket.SendTo(s.ToArray(), remote);
+                        }
                     }
                     break;
 

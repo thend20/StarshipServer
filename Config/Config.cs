@@ -189,6 +189,8 @@ namespace com.avilance.Starrybound
         public string logFile = "proxy.log";
         public LogType logLevel = LogType.Info;
 
+        public string serverName = "Starrybound Server";
+
         public bool allowSpaces = true;
         public bool allowSymbols = false;
         public string[] bannedUsernames = new string[] { "admin", "developer", "moderator", "owner" };
