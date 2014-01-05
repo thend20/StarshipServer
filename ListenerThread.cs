@@ -166,6 +166,10 @@ namespace com.avilance.Starrybound
                         StarryboundServer.logError("RCON: " + e.ToString());
                     }
                     break;
+
+                default:
+                    StarryboundServer.logError("RCON: Received unknown or unsupported header byte - " + headerByte);
+                    break;
             }
         }
 
