@@ -47,6 +47,7 @@ namespace com.avilance.Starrybound
                 StarryboundServer.privatePassword = Utils.GenerateSecureSalt();
                 StarryboundServer.serverConfig.serverPasswords = new string[] { StarryboundServer.privatePassword };
                 StarryboundServer.serverConfig.maxPlayers = StarryboundServer.config.maxClients + 10;
+                StarryboundServer.serverConfig.bind = StarryboundServer.config.proxyIP;
                 if (StarryboundServer.serverConfig.useDefaultWorldCoordinate)
                 {
                     string[] spawnPlanet = StarryboundServer.serverConfig.defaultWorldCoordinate.Split(':');
