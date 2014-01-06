@@ -73,8 +73,8 @@ namespace com.avilance.Starrybound.Commands
                 i++;
             }
 
-            this.client.sendChatMessage("Staff: " + staffListO);
-            this.client.sendChatMessage("Players: " + userListO);
+            if (staffList.Count > 0) this.client.sendChatMessage("Staff: " + staffListO);
+            if (userList.Count > 0) this.client.sendChatMessage("Players: " + userListO);
 
             return true;
         }
