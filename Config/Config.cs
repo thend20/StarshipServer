@@ -202,6 +202,7 @@ namespace com.avilance.Starrybound
         public string[] starterItems = new string[] { };
 
         public bool spawnWorldProtection = false;
+        public string defaultSpawnCoordinates = "";
         public string buildErrorMessage = "You do not have permission to build on this server. You can apply for build rights on our forum.";
 
         public string[] sectors = new string[] { "alpha", "beta", "gamma", "delta", "sectorx" };
@@ -215,6 +216,7 @@ namespace com.avilance.Starrybound
 
         public string[] projectileBlacklist = new string[] { };
         public string[] projectileBlacklistSpawn = new string[] { };
+        public string[] projectileGreylist = new string[] { };
         public bool projectileSpawnListIsWhitelist = false;
 
         public int connectTimeout = 5;

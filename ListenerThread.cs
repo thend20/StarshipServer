@@ -214,14 +214,20 @@ namespace com.avilance.Starrybound
                                 byte[] name = encodeString(client.playerData.name);
                                 s.Write(name, 0, name.Length);
 
-                                byte[] score = BitConverter.GetBytes((long)0);
+                                byte[] score = new byte[4];
+                                score = BitConverter.GetBytes((long)0);
                                 s.Write(score, 0, score.Length);
 
-                                byte[] connected = BitConverter.GetBytes((float)0);
+                                float seconds = Utils.getTimestamp() - client.connectedTime;
+                                byte[] connected = new byte[4];
+                                connected = BitConverter.GetBytes(seconds);
                                 s.Write(connected, 0, connected.Length);
+
+                                StarryboundServer.logInfo("Client ID #" + i + ": " + Utils.ByteArrayToString(new byte[] { Convert.ToByte((uint)i) }) + Utils.ByteArrayToString(name) + Utils.ByteArrayToString(score) + Utils.ByteArrayToString(connected));
                             }
 
                             StarryboundServer.logInfo("RCON: Sending A2S_PLAYER Response packet for " + StarryboundServer.clientCount + " player(s) to " + remote);
+                            StarryboundServer.logInfo("RCON: Dump packet: " + Utils.ByteArrayToString(s.ToArray()));
                             udpSocket.SendTo(s.ToArray(), remote);
                         }
                     }

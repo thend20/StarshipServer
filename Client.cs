@@ -42,6 +42,8 @@ namespace com.avilance.Starrybound
         private Thread ServerForwarder;
         private Thread ClientForwarder;
 
+        public int connectedTime = 0;
+
         public int kickTargetTimestamp = 0;
         public bool connectionAlive { get { if (this.cSocket.Connected && this.sSocket.Connected && this.state != ClientState.Disposing) return true; else return false; } }
 
@@ -120,6 +122,8 @@ namespace com.avilance.Starrybound
 
                 this.sIn = new BinaryReader(this.sSocket.GetStream());
                 this.sOut = new BinaryWriter(this.sSocket.GetStream());
+
+                this.connectedTime = Utils.getTimestamp();
 
                 // Forwarding for data from SERVER (sIn) to CLIENT (cOut)
                 this.ServerForwarder = new Thread(new ThreadStart(new ForwardThread(this, this.sIn, this.cOut, Direction.Server).run));
