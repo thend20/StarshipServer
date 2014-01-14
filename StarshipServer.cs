@@ -444,6 +444,8 @@ namespace com.avilance.Starship
         {
             if ((int)config.logLevel > (int)logType && logType != LogType.FileOnly) return;
 
+		message = DateTime.Now.ToString("yyyyMMdd HH:mm:ss") + " - " + message; 
+
             switch (logType)
             {
                 case LogType.Debug:
