@@ -1,15 +1,15 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,12 +19,12 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.ComponentModel;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class Config {
-        internal static string RulesPath { get { return Path.Combine(StarryboundServer.SavePath, "rules.txt"); } }
-        internal static string MotdPath { get { return Path.Combine(StarryboundServer.SavePath, "motd.txt"); } }
-        internal static string ConfigPath { get { return Path.Combine(StarryboundServer.SavePath, "config.json"); } }
+        internal static string RulesPath { get { return Path.Combine(StarshipServer.SavePath, "rules.txt"); } }
+        internal static string MotdPath { get { return Path.Combine(StarshipServer.SavePath, "motd.txt"); } }
+        internal static string ConfigPath { get { return Path.Combine(StarshipServer.SavePath, "config.json"); } }
 
         public static void CreateIfNot(string file, string data = "")
         {
@@ -41,24 +41,24 @@ namespace com.avilance.Starrybound
 
         public static string GetMotd()
         {
-            string returnString = StarryboundServer.motdData;
+            string returnString = StarshipServer.motdData;
 
-            returnString = returnString.Replace("%players%", StarryboundServer.clientCount.ToString());
-            returnString = returnString.Replace("%versionNum%", StarryboundServer.VersionNum.ToString());
+            returnString = returnString.Replace("%players%", StarshipServer.clientCount.ToString());
+            returnString = returnString.Replace("%versionNum%", StarshipServer.VersionNum.ToString());
 
             return returnString;
         }
 
         public static string GetRules()
         {
-            return StarryboundServer.rulesData;
+            return StarshipServer.rulesData;
         }
 
         public static int[] GetSpamSettings()
         {
-            if (!StarryboundServer.config.enableSpamProtection) return new int[] { 0, 0 };
+            if (!StarshipServer.config.enableSpamProtection) return new int[] { 0, 0 };
 
-            string[] spamSplit = StarryboundServer.config.spamInterval.Split(':');
+            string[] spamSplit = StarshipServer.config.spamInterval.Split(':');
 
             try
             {
@@ -69,7 +69,7 @@ namespace com.avilance.Starrybound
             }
             catch (Exception e)
             {
-                StarryboundServer.logError("Unable to read settings for anti-spam system - Is it in numMessages:numSeconds format?");
+                StarshipServer.logError("Unable to read settings for anti-spam system - Is it in numMessages:numSeconds format?");
                 return new int[] { 0, 0 };
             }
         }
@@ -77,24 +77,24 @@ namespace com.avilance.Starrybound
         public static void SetupConfig()
         {
             CreateIfNot(RulesPath, "1) Respect all players 2) No griefing/hacking 3) Have fun!");
-            CreateIfNot(MotdPath, "This server is running Starrybound Server v%versionNum%. Type /help for a list of commands. There are currently %players% player(s) online.");
+            CreateIfNot(MotdPath, "This server is running Starship Server v%versionNum%. Type /help for a list of commands. There are currently %players% player(s) online.");
 
-            StarryboundServer.motdData = ReadConfigFile(MotdPath);
-            StarryboundServer.rulesData = ReadConfigFile(RulesPath);
+            StarshipServer.motdData = ReadConfigFile(MotdPath);
+            StarshipServer.rulesData = ReadConfigFile(RulesPath);
             
             if (File.Exists(ConfigPath))
             {
-                StarryboundServer.config = ConfigFile.Read(ConfigPath);
+                StarshipServer.config = ConfigFile.Read(ConfigPath);
             }
 
-            if (StarryboundServer.IsMono && StarryboundServer.config == null)
-                StarryboundServer.config = new ConfigFile();
+            if (StarshipServer.IsMono && StarshipServer.config == null)
+                StarshipServer.config = new ConfigFile();
 
-            StarryboundServer.config.Write(ConfigPath);
+            StarshipServer.config.Write(ConfigPath);
 
 #if DEBUG
-            StarryboundServer.config.logLevel = LogType.Debug;
-            StarryboundServer.logDebug("SetupConfig", "This was compiled in DEBUG, forcing debug logging!");
+            StarshipServer.config.logLevel = LogType.Debug;
+            StarshipServer.logDebug("SetupConfig", "This was compiled in DEBUG, forcing debug logging!");
 #endif
         }
 
@@ -102,7 +102,7 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                StarryboundServer.motdData = ReadConfigFile(MotdPath);
+                StarshipServer.motdData = ReadConfigFile(MotdPath);
                 return true;
             }
             catch (Exception) { return false; }
@@ -112,7 +112,7 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                StarryboundServer.rulesData = ReadConfigFile(RulesPath);
+                StarshipServer.rulesData = ReadConfigFile(RulesPath);
                 return true;
             }
             catch (Exception) { return false; }
@@ -152,7 +152,7 @@ namespace com.avilance.Starrybound
                 {
                     case "mute":
                         player.isMuted = true;
-                        StarryboundServer.sendGlobalMessage("^#f75d5d;" + player.name + " has been muted automatically for spamming.");
+                        StarshipServer.sendGlobalMessage("^#f75d5d;" + player.name + " has been muted automatically for spamming.");
                         break;
 
                     case "kick":
@@ -189,7 +189,7 @@ namespace com.avilance.Starrybound
         public string logFile = "proxy.log";
         public LogType logLevel = LogType.Info;
 
-        public string serverName = "Starrybound Server";
+        public string serverName = "Starship Server";
 
         public bool allowSpaces = true;
         public bool allowSymbols = false;
@@ -232,7 +232,7 @@ namespace com.avilance.Starrybound
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 ConfigFile file = Read(fs);
-                StarryboundServer.logInfo("Starrybound config loaded successfully.");
+                StarshipServer.logInfo("Starship config loaded successfully.");
                 return file;
             }
         }
@@ -248,7 +248,7 @@ namespace com.avilance.Starrybound
             }
             catch (Exception) 
             {
-                StarryboundServer.logException("Starrybound config is unreadable - Re-creating config with default values");
+                StarshipServer.logException("Starship config is unreadable - Re-creating config with default values");
                 return new ConfigFile(); 
             }
         }

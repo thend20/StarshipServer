@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using System;
@@ -15,9 +15,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 
-namespace com.avilance.Starrybound.Extensions
+namespace com.avilance.Starship.Extensions
 {
     public static class BinaryReaderEx
     {
@@ -52,7 +52,7 @@ namespace com.avilance.Starrybound.Extensions
             int z = read.ReadInt32BE();
             int planet = read.ReadInt32BE();
             int satellite = read.ReadInt32BE();
-            if (StarryboundServer.config.sectors.Contains(sector))
+            if (StarshipServer.config.sectors.Contains(sector))
             {
                 if (planet < 0 || planet > 256)
                     throw new IndexOutOfRangeException("WorldCoordinate Planet out of range: " + planet);

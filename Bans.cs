@@ -1,15 +1,15 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -18,7 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     public class Ban
     {
@@ -65,7 +65,7 @@ namespace com.avilance.Starrybound
         public void remove()
         {
             Bans.allBans.Remove(banID);
-            Bans.Write(Path.Combine(StarryboundServer.SavePath, "bans.json"));
+            Bans.Write(Path.Combine(StarshipServer.SavePath, "bans.json"));
         }
     }
 
@@ -80,7 +80,7 @@ namespace com.avilance.Starrybound
         public static void ProcessBans () 
         {
             readLegacyBans();
-            List<Ban> bans = Read(Path.Combine(StarryboundServer.SavePath, "bans.json"));
+            List<Ban> bans = Read(Path.Combine(StarshipServer.SavePath, "bans.json"));
 
             foreach (Ban ban in bans)
             {
@@ -102,9 +102,9 @@ namespace com.avilance.Starrybound
                 if (ban.hasExpired()) { ban.remove(); removedCount++; }
             }
 
-            Write(Path.Combine(StarryboundServer.SavePath, "bans.json"));
+            Write(Path.Combine(StarshipServer.SavePath, "bans.json"));
 
-            StarryboundServer.logInfo(allBans.Count + " ban(s) have been loaded from file. " + removedCount + " ban(s) have expired and been removed.");
+            StarshipServer.logInfo(allBans.Count + " ban(s) have been loaded from file. " + removedCount + " ban(s) have expired and been removed.");
         }
 
         /// <summary>
@@ -142,12 +142,12 @@ namespace com.avilance.Starrybound
 
                 allBans.Add(nextBanID, ban);
 
-                Write(Path.Combine(StarryboundServer.SavePath, "bans.json"));
+                Write(Path.Combine(StarshipServer.SavePath, "bans.json"));
 
                 nextBanID++;
             }
             catch (Exception e) {
-                StarryboundServer.logException("Unable to write ban to banned-players.txt: " + e.Message);
+                StarshipServer.logException("Unable to write ban to banned-players.txt: " + e.Message);
                 return false; 
             }
 
@@ -179,7 +179,7 @@ namespace com.avilance.Starrybound
             }
             catch (Exception)
             {
-                StarryboundServer.logException("Server ban file is not readable - Bans WILL NOT operate until this issue is fixed.");
+                StarshipServer.logException("Server ban file is not readable - Bans WILL NOT operate until this issue is fixed.");
                 writeBans = false;
                 return new List<Ban>();
             }
@@ -198,7 +198,7 @@ namespace com.avilance.Starrybound
         public static void Write(Stream stream)
         {
             List<Ban> banList;
-            if (StarryboundServer.groups.Count > 0)
+            if (StarshipServer.groups.Count > 0)
             {
                 banList = new List<Ban>();
 
@@ -221,7 +221,7 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                StreamReader reader = File.OpenText(Path.Combine(StarryboundServer.SavePath, "banned-players.txt"));
+                StreamReader reader = File.OpenText(Path.Combine(StarshipServer.SavePath, "banned-players.txt"));
                 string line;
                 int banCount = 0;
                 while ((line = reader.ReadLine()) != null)
@@ -264,14 +264,14 @@ namespace com.avilance.Starrybound
 
                         banCount++;
                     }
-                    catch (Exception) { banCount--; StarryboundServer.logWarn("Invalid ban detected in banned-players.txt"); }
+                    catch (Exception) { banCount--; StarshipServer.logWarn("Invalid ban detected in banned-players.txt"); }
                 }
 
                 reader.Close();
             }
             catch (Exception e)
             {
-                StarryboundServer.logWarn("Unable to read bans from legacy banned-players.txt: " + e.Message);
+                StarshipServer.logWarn("Unable to read bans from legacy banned-players.txt: " + e.Message);
             }
         }
         #endregion Legacy

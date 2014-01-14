@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using Newtonsoft.Json;
@@ -17,15 +17,15 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Extensions;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Extensions;
 using System.Threading;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class ServerConfig
     {
-        internal static string ConfigPath { get { return Path.Combine(StarryboundServer.bootstrapConfig.storageDirectory, "starbound.config"); } }
+        internal static string ConfigPath { get { return Path.Combine(StarshipServer.bootstrapConfig.storageDirectory, "starbound.config"); } }
 
         public static void CreateIfNot(string file, string data = "")
         {
@@ -41,24 +41,24 @@ namespace com.avilance.Starrybound
             {
                 if (File.Exists(ConfigPath))
                 {
-                    StarryboundServer.serverConfig = ServerFile.Read(ConfigPath);
+                    StarshipServer.serverConfig = ServerFile.Read(ConfigPath);
                 }
-                StarryboundServer.serverConfig.gamePort = StarryboundServer.config.serverPort;
-                StarryboundServer.privatePassword = Utils.GenerateSecureSalt();
-                StarryboundServer.serverConfig.serverPasswords = new string[] { StarryboundServer.privatePassword };
-                StarryboundServer.serverConfig.maxPlayers = StarryboundServer.config.maxClients + 10;
-                StarryboundServer.serverConfig.bind = StarryboundServer.config.proxyIP;
-                if (StarryboundServer.serverConfig.useDefaultWorldCoordinate)
+                StarshipServer.serverConfig.gamePort = StarshipServer.config.serverPort;
+                StarshipServer.privatePassword = Utils.GenerateSecureSalt();
+                StarshipServer.serverConfig.serverPasswords = new string[] { StarshipServer.privatePassword };
+                StarshipServer.serverConfig.maxPlayers = StarshipServer.config.maxClients + 10;
+                StarshipServer.serverConfig.bind = StarshipServer.config.proxyIP;
+                if (StarshipServer.serverConfig.useDefaultWorldCoordinate)
                 {
-                    string[] spawnPlanet = StarryboundServer.serverConfig.defaultWorldCoordinate.Split(':');
-                    if (spawnPlanet.Length == 5) StarryboundServer.spawnPlanet = new WorldCoordinate(spawnPlanet[0], Convert.ToInt32(spawnPlanet[1]), Convert.ToInt32(spawnPlanet[2]), Convert.ToInt32(spawnPlanet[3]), Convert.ToInt32(spawnPlanet[4]), 0);
-                    else StarryboundServer.spawnPlanet = new WorldCoordinate(spawnPlanet[0], Convert.ToInt32(spawnPlanet[1]), Convert.ToInt32(spawnPlanet[2]), Convert.ToInt32(spawnPlanet[3]), Convert.ToInt32(spawnPlanet[4]), Convert.ToInt32(spawnPlanet[5]));
+                    string[] spawnPlanet = StarshipServer.serverConfig.defaultWorldCoordinate.Split(':');
+                    if (spawnPlanet.Length == 5) StarshipServer.spawnPlanet = new WorldCoordinate(spawnPlanet[0], Convert.ToInt32(spawnPlanet[1]), Convert.ToInt32(spawnPlanet[2]), Convert.ToInt32(spawnPlanet[3]), Convert.ToInt32(spawnPlanet[4]), 0);
+                    else StarshipServer.spawnPlanet = new WorldCoordinate(spawnPlanet[0], Convert.ToInt32(spawnPlanet[1]), Convert.ToInt32(spawnPlanet[2]), Convert.ToInt32(spawnPlanet[3]), Convert.ToInt32(spawnPlanet[4]), Convert.ToInt32(spawnPlanet[5]));
                 }
-                StarryboundServer.serverConfig.Write(ConfigPath);
+                StarshipServer.serverConfig.Write(ConfigPath);
             }
             catch(Exception e)
             {
-                StarryboundServer.logFatal("Failed to parse starbound.config: " + e.ToString());
+                StarshipServer.logFatal("Failed to parse starbound.config: " + e.ToString());
                 Thread.Sleep(5000);
                 Environment.Exit(8);
             }
@@ -66,9 +66,9 @@ namespace com.avilance.Starrybound
 
         public static void RemovePrivateConfig()
         {
-            StarryboundServer.serverConfig.serverPasswords = new string[] { "" };
-            StarryboundServer.serverConfig.gamePort = 21025;
-            StarryboundServer.serverConfig.Write(ConfigPath);
+            StarshipServer.serverConfig.serverPasswords = new string[] { "" };
+            StarshipServer.serverConfig.gamePort = 21025;
+            StarshipServer.serverConfig.Write(ConfigPath);
         }
     }
 
@@ -163,7 +163,7 @@ namespace com.avilance.Starrybound
         public int sampleRate = 44100;
 
         [DataMember]
-        public string serverName = "A Starrybound Server";
+        public string serverName = "A Starship Server";
 
         [DataMember]
         public string[] serverPasswords = new string[] { "" }; // #TODO: Random server password on every server start
@@ -212,7 +212,7 @@ namespace com.avilance.Starrybound
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 ServerFile file = Read(fs);
-                StarryboundServer.logInfo("Starbound server config loaded successfully.");
+                StarshipServer.logInfo("Starbound server config loaded successfully.");
                 return file;
             }
         }
@@ -221,12 +221,12 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                DataContractJsonSerializer str = new DataContractJsonSerializer(StarryboundServer.serverConfig.GetType());
+                DataContractJsonSerializer str = new DataContractJsonSerializer(StarshipServer.serverConfig.GetType());
                 return str.ReadObject(stream) as ServerFile;
             }
             catch (Exception) 
             {
-                StarryboundServer.logException("Starbound server config is unreadable - Re-creating config with default values");
+                StarshipServer.logException("Starbound server config is unreadable - Re-creating config with default values");
                 return new ServerFile(); 
             }
         }

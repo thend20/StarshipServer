@@ -1,24 +1,24 @@
 /* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Extensions;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using com.avilance.Starrybound.Commands;
+using com.avilance.Starship.Commands;
 
-namespace com.avilance.Starrybound.Packets
+namespace com.avilance.Starship.Packets
 {
     class Packet11ChatSend : PacketBase
     {
@@ -51,7 +51,7 @@ namespace com.avilance.Starrybound.Packets
             #region Command Processor
             if (message.StartsWith("#"))
             {
-                StarryboundServer.logInfo("[Admin Chat] [" + this.client.playerData.name + "]: " + message);
+                StarshipServer.logInfo("[Admin Chat] [" + this.client.playerData.name + "]: " + message);
 
                 bool aChat = new AdminChat(this.client).doProcess(new string[] { message.Remove(0, 1) });
 
@@ -61,7 +61,7 @@ namespace com.avilance.Starrybound.Packets
             {
                 try
                 {
-                    StarryboundServer.logInfo("[Command] [" + this.client.playerData.name + "]: " + message);
+                    StarshipServer.logInfo("[Command] [" + this.client.playerData.name + "]: " + message);
                     string[] args = message.Remove(0, 1).Split(' ');
                     string cmd = args[0].ToLower();
 
@@ -207,7 +207,7 @@ namespace com.avilance.Starrybound.Packets
                             break;
 
                         case "auth":
-                            if (String.IsNullOrWhiteSpace(StarryboundServer.authCode)) goto default;
+                            if (String.IsNullOrWhiteSpace(StarshipServer.authCode)) goto default;
                             else new Auth(this.client).doProcess(args);
                             break;
 
@@ -231,7 +231,7 @@ namespace com.avilance.Starrybound.Packets
                 return false;
             }
 
-            StarryboundServer.logInfo("[" + ((ChatSendContext)context).ToString() + "] [" + this.client.playerData.name + "]: " + message);
+            StarshipServer.logInfo("[" + ((ChatSendContext)context).ToString() + "] [" + this.client.playerData.name + "]: " + message);
             return true;
         }
 

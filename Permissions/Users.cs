@@ -1,15 +1,15 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace com.avilance.Starrybound.Permissions
+namespace com.avilance.Starship.Permissions
 {
     public class User
     {
@@ -57,19 +57,19 @@ namespace com.avilance.Starrybound.Permissions
         {
             try
             {
-                return StarryboundServer.groups[groupName];
+                return StarshipServer.groups[groupName];
             }
             catch (Exception)
             {
-                groupName = StarryboundServer.defaultGroup;
-                return StarryboundServer.groups[groupName];
+                groupName = StarshipServer.defaultGroup;
+                return StarshipServer.groups[groupName];
             }
         }
     }
 
     class Users
     {
-        internal static string UsersPath { get { return Path.Combine(StarryboundServer.SavePath, "players"); } }
+        internal static string UsersPath { get { return Path.Combine(StarshipServer.SavePath, "players"); } }
 
         public static void SetupUsers()
         {
@@ -79,33 +79,33 @@ namespace com.avilance.Starrybound.Permissions
                 GenerateSAKey();
             }
             else if (!Directory.EnumerateFileSystemEntries(UsersPath).Any()) GenerateSAKey();
-            else if (File.Exists(Path.Combine(StarryboundServer.SavePath, "authcode.txt"))) GenerateSAKey();
+            else if (File.Exists(Path.Combine(StarshipServer.SavePath, "authcode.txt"))) GenerateSAKey();
         }
 
         public static void GenerateSAKey()
         {
-            if (!File.Exists(Path.Combine(StarryboundServer.SavePath, "authcode.txt")))
+            if (!File.Exists(Path.Combine(StarshipServer.SavePath, "authcode.txt")))
             {
                 var r = new Random((int)DateTime.Now.ToBinary());
-                StarryboundServer.authCode = r.Next(100000, 10000000).ToString();
+                StarshipServer.authCode = r.Next(100000, 10000000).ToString();
 
-                using (var tw = new StreamWriter(Path.Combine(StarryboundServer.SavePath, "authcode.txt")))
+                using (var tw = new StreamWriter(Path.Combine(StarshipServer.SavePath, "authcode.txt")))
                 {
-                    tw.WriteLine(StarryboundServer.authCode);
+                    tw.WriteLine(StarshipServer.authCode);
                 }
             }
             else
             {
-                using (var tr = new StreamReader(Path.Combine(StarryboundServer.SavePath, "authcode.txt")))
+                using (var tr = new StreamReader(Path.Combine(StarshipServer.SavePath, "authcode.txt")))
                 {
-                    StarryboundServer.authCode = tr.ReadLine();
+                    StarshipServer.authCode = tr.ReadLine();
                 }
             }
 
-            StarryboundServer.logWarn("************************************************************************");
-            StarryboundServer.logWarn("Important notice: To become SuperAdmin, you need to join the game and type /auth " + StarryboundServer.authCode);
-            StarryboundServer.logWarn("This token will display until disabled by verification and is usable by any player.");
-            StarryboundServer.logWarn("************************************************************************");
+            StarshipServer.logWarn("************************************************************************");
+            StarshipServer.logWarn("Important notice: To become SuperAdmin, you need to join the game and type /auth " + StarshipServer.authCode);
+            StarshipServer.logWarn("This token will display until disabled by verification and is usable by any player.");
+            StarshipServer.logWarn("************************************************************************");
         }
 
         public static User GetUser(string name, string uuid, string ip)
@@ -119,9 +119,9 @@ namespace com.avilance.Starrybound.Permissions
                 }
                 catch (Exception)
                 {
-                    StarryboundServer.logError("Player data for user " + name.ToLower() + " with UUID " + uuid + " is corrupt. Re-generating user file");
+                    StarshipServer.logError("Player data for user " + name.ToLower() + " with UUID " + uuid + " is corrupt. Re-generating user file");
 
-                    User user = new User(name, uuid, ip, StarryboundServer.defaultGroup, false, true, 0, true, true, false, new List<string>(), new List<string>());
+                    User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, true, true, false, new List<string>(), new List<string>());
                     Write(Path.Combine(UsersPath, name.ToLower() + ".json"), user);
 
                     return user;
@@ -129,7 +129,7 @@ namespace com.avilance.Starrybound.Permissions
             }
             else
             {
-                User user = new User(name, uuid, ip, StarryboundServer.defaultGroup, false, true, 0, false, false, false, new List<string>(), new List<string>());
+                User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, false, false, false, new List<string>(), new List<string>());
                 Write(Path.Combine(UsersPath, name.ToLower() + ".json"), user);
 
                 return user;
@@ -145,7 +145,7 @@ namespace com.avilance.Starrybound.Permissions
             }
             catch (Exception e)
             {
-                StarryboundServer.logException("Unable to save player data file for " + player.name + ": " + e.StackTrace);
+                StarshipServer.logException("Unable to save player data file for " + player.name + ": " + e.StackTrace);
             }
         }
 
@@ -155,7 +155,7 @@ namespace com.avilance.Starrybound.Permissions
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 User file = Read(fs, data);
-                StarryboundServer.logInfo("Loaded persistant user storage for " + file.name);
+                StarshipServer.logInfo("Loaded persistant user storage for " + file.name);
                 return file;
             }
         }
@@ -171,8 +171,8 @@ namespace com.avilance.Starrybound.Permissions
             }
             catch (Exception)
             {
-                StarryboundServer.logException("Persistant user storage for " + data[0] + " is corrupt - Creating with default values");
-                return new User(data[0], data[1], data[2], StarryboundServer.defaultGroup, false, true, Utils.getTimestamp(), false, false, false, new List<string>(), new List<string>());
+                StarshipServer.logException("Persistant user storage for " + data[0] + " is corrupt - Creating with default values");
+                return new User(data[0], data[1], data[2], StarshipServer.defaultGroup, false, true, Utils.getTimestamp(), false, false, false, new List<string>(), new List<string>());
             }
         }
 

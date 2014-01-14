@@ -1,25 +1,25 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using com.avilance.Starrybound.Extensions;
+using com.avilance.Starship.Extensions;
 using System.Net;
 using MaxMind;
 
-namespace com.avilance.Starrybound.Packets
+namespace com.avilance.Starship.Packets
 {
     class Packet2ConnectResponse : PacketBase
     {
@@ -47,11 +47,11 @@ namespace com.avilance.Starrybound.Packets
             uint clientID = packetData.ReadVarUInt32();
             string rejectReason = packetData.ReadStarString();
 
-            Client target = StarryboundServer.getClient(clientID);
+            Client target = StarshipServer.getClient(clientID);
             if(target != null)
             {
                 target.forceDisconnect(direction, "The parent server reclaimed this clientId");
-                StarryboundServer.logError("[" + this.client.playerData.name + "] " + direction + ": The parent server reclaimed this clientId (" + clientID + ")");
+                StarshipServer.logError("[" + this.client.playerData.name + "] " + direction + ": The parent server reclaimed this clientId (" + clientID + ")");
                 return true;
             }
 
@@ -64,19 +64,19 @@ namespace com.avilance.Starrybound.Packets
                 return true;
             }
 
-            StarryboundServer.addClient(this.client);
+            StarshipServer.addClient(this.client);
 
             string geoip_prefix = "";
-            if (StarryboundServer.config.enableGeoIP && StarryboundServer.Geo != null)
+            if (StarshipServer.config.enableGeoIP && StarshipServer.Geo != null)
             {
-                var code = StarryboundServer.Geo.TryGetCountryCode(IPAddress.Parse(player.ip));
+                var code = StarshipServer.Geo.TryGetCountryCode(IPAddress.Parse(player.ip));
                 var geo_loc = code == null ? "N/A" : GeoIPCountry.GetCountryNameByCode(code);
                 geoip_prefix = String.Format("({0})", geo_loc);
             }
 
-            StarryboundServer.sendGlobalMessage(String.Format("{0}{1} has joined the server!", player.name, geoip_prefix));
+            StarshipServer.sendGlobalMessage(String.Format("{0}{1} has joined the server!", player.name, geoip_prefix));
             this.client.state = ClientState.Connected;
-            StarryboundServer.logInfo(String.Format("[{0}][{1}] joined with UUID [{2}]{3}", this.client.playerData.client, this.client.playerData.ip, player.uuid, 
+            StarshipServer.logInfo(String.Format("[{0}][{1}] joined with UUID [{2}]{3}", this.client.playerData.client, this.client.playerData.ip, player.uuid, 
                                       geoip_prefix != "" ? String.Format(" from {0}", geoip_prefix) : ""));
 
             return true;

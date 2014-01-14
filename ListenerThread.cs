@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using System;
@@ -17,10 +17,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using System.IO;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class ListenerThread
     {
@@ -34,39 +34,39 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                IPAddress localAdd = IPAddress.Parse(StarryboundServer.config.proxyIP);
-                tcpSocket = new TcpListener(localAdd, StarryboundServer.config.proxyPort);
+                IPAddress localAdd = IPAddress.Parse(StarshipServer.config.proxyIP);
+                tcpSocket = new TcpListener(localAdd, StarshipServer.config.proxyPort);
                 tcpSocket.Start();
 
-                StarryboundServer.logInfo("Proxy server has been started on " + localAdd.ToString() + ":" + StarryboundServer.config.proxyPort);
-                StarryboundServer.serverState = ServerState.ListenerReady;
+                StarshipServer.logInfo("Proxy server has been started on " + localAdd.ToString() + ":" + StarshipServer.config.proxyPort);
+                StarshipServer.serverState = ServerState.ListenerReady;
 
                 try
                 {
                     while (true)
                     {
                         TcpClient clientSocket = tcpSocket.AcceptTcpClient();
-                        clientSocket.ReceiveTimeout = StarryboundServer.config.clientSocketTimeout * 1000;
-                        clientSocket.SendTimeout = StarryboundServer.config.internalSocketTimeout * 1000;
+                        clientSocket.ReceiveTimeout = StarshipServer.config.clientSocketTimeout * 1000;
+                        clientSocket.SendTimeout = StarshipServer.config.internalSocketTimeout * 1000;
                         new Thread(new ThreadStart(new Client(clientSocket).run)).Start();
                     }
                 }
                 catch (ThreadAbortException) { }
                 catch (Exception e)
                 {
-                    if ((int)StarryboundServer.serverState > 3) return;
-                    StarryboundServer.logException("ListenerThread Exception: " + e.ToString());
+                    if ((int)StarshipServer.serverState > 3) return;
+                    StarshipServer.logException("ListenerThread Exception: " + e.ToString());
                 }
 
                 tcpSocket.Stop();
-                StarryboundServer.logFatal("ListenerThread has failed - No new connections will be possible.");
-                StarryboundServer.serverState = ServerState.Crashed;
+                StarshipServer.logFatal("ListenerThread has failed - No new connections will be possible.");
+                StarshipServer.serverState = ServerState.Crashed;
             }
             catch (ThreadAbortException) { }
             catch(SocketException e)
             {
-                StarryboundServer.logFatal("TcpListener has failed to start: " + e.Message);
-                StarryboundServer.serverState = ServerState.Crashed;
+                StarshipServer.logFatal("TcpListener has failed to start: " + e.Message);
+                StarshipServer.serverState = ServerState.Crashed;
             }
         }
 
@@ -74,11 +74,11 @@ namespace com.avilance.Starrybound
         {
             try
             {
-                IPAddress localAdd = IPAddress.Parse(StarryboundServer.config.proxyIP);
+                IPAddress localAdd = IPAddress.Parse(StarshipServer.config.proxyIP);
 
                 udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                IPEndPoint ipEndPoint = new IPEndPoint(localAdd, StarryboundServer.config.proxyPort);
+                IPEndPoint ipEndPoint = new IPEndPoint(localAdd, StarshipServer.config.proxyPort);
 
                 udpSocket.Bind(ipEndPoint);
 
@@ -86,20 +86,20 @@ namespace com.avilance.Starrybound
                 //The epSender identifies the incoming clients
                 EndPoint epSender = (EndPoint)ipeSender;
 
-                StarryboundServer.logInfo("RCON listener has been started on UDP " + localAdd.ToString() + ":" + StarryboundServer.config.proxyPort);
+                StarshipServer.logInfo("RCON listener has been started on UDP " + localAdd.ToString() + ":" + StarshipServer.config.proxyPort);
 
                 while (true)
                 {
                     int bytesRead = udpSocket.ReceiveFrom(udpByteData, ref epSender);
 
-                    StarryboundServer.logInfo("Receiving RCON Data...");
+                    StarshipServer.logInfo("Receiving RCON Data...");
                     OnReceive(udpByteData, bytesRead, epSender);
                 }
 
             }
             catch (Exception e)
             {
-                StarryboundServer.logError("Something went wrong while trying to setup the UDP listener. " + e.ToString());
+                StarshipServer.logError("Something went wrong while trying to setup the UDP listener. " + e.ToString());
             }
         }
 
@@ -120,28 +120,28 @@ namespace com.avilance.Starrybound
 
                     if (text != needle)
                     {
-                        StarryboundServer.logError("RCON: Received invalid A2S_INFO request: " + text + " is invalid.");
+                        StarshipServer.logError("RCON: Received invalid A2S_INFO request: " + text + " is invalid.");
                         return;
                     }
-                    else StarryboundServer.logDebug("ListenerThread::SourceRequest", "RCON: Matched A2S_INFO request!");
+                    else StarshipServer.logDebug("ListenerThread::SourceRequest", "RCON: Matched A2S_INFO request!");
 
                     try
                     {
                         byte header = 0x49;
                         byte protocol = 0x02;
-                        byte[] name = encodeString(StarryboundServer.config.serverName);
+                        byte[] name = encodeString(StarshipServer.config.serverName);
                         byte[] map = encodeString("Starbound");
                         byte[] folder = encodeString("na");
                         byte[] game = encodeString("Starbound");
                         byte[] appID = BitConverter.GetBytes(Convert.ToUInt16(1337));
-                        byte players = Convert.ToByte((uint)StarryboundServer.clientCount);
-                        byte maxplayers = Convert.ToByte((uint)StarryboundServer.config.maxClients);
+                        byte players = Convert.ToByte((uint)StarshipServer.clientCount);
+                        byte maxplayers = Convert.ToByte((uint)StarshipServer.config.maxClients);
                         byte bots = Convert.ToByte((uint)0);
                         byte servertype = Convert.ToByte('d');
-                        byte environment = Convert.ToByte((StarryboundServer.IsMono ? 'l' : 'w'));
-                        byte visibility = Convert.ToByte((uint)(StarryboundServer.config.proxyPass == "" ? 0 : 1));
+                        byte environment = Convert.ToByte((StarshipServer.IsMono ? 'l' : 'w'));
+                        byte visibility = Convert.ToByte((uint)(StarshipServer.config.proxyPass == "" ? 0 : 1));
                         byte vac = Convert.ToByte((uint)0);
-                        byte[] version = encodeString(StarryboundServer.starboundVersion.Name);
+                        byte[] version = encodeString(StarshipServer.starboundVersion.Name);
 
                         var s = new MemoryStream();
                         s.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, 0, 4);
@@ -161,18 +161,18 @@ namespace com.avilance.Starrybound
                         s.WriteByte(vac);
                         s.Write(version, 0, version.Length);
 
-                        StarryboundServer.logInfo("RCON: Sending A2S_INFO Response packet to " + remote);
+                        StarshipServer.logInfo("RCON: Sending A2S_INFO Response packet to " + remote);
                         udpSocket.SendTo(s.ToArray(), remote);
                     }
                     catch (Exception e)
                     {
-                        StarryboundServer.logError("RCON: Unable to send data to stream! An error occurred.");
-                        StarryboundServer.logError("RCON: " + e.ToString());
+                        StarshipServer.logError("RCON: Unable to send data to stream! An error occurred.");
+                        StarshipServer.logError("RCON: " + e.ToString());
                     }
                     break;
 
                 case 0x55:
-                    StarryboundServer.logDebug("ListenerThread::SourceRequest", "RCON: Received A2S_PLAYER request from " + remote);
+                    StarshipServer.logDebug("ListenerThread::SourceRequest", "RCON: Received A2S_PLAYER request from " + remote);
 
                     dataArray = new byte[4];
                     Buffer.BlockCopy(data, 5, dataArray, 0, dataArray.Length);
@@ -190,21 +190,21 @@ namespace com.avilance.Starrybound
                         s.WriteByte(0x41);
                         s.Write(buffer, 0, 4);
 
-                        StarryboundServer.logInfo("RCON: Sending A2S_PLAYER Challenge Response packet to " + remote);
+                        StarshipServer.logInfo("RCON: Sending A2S_PLAYER Challenge Response packet to " + remote);
                         udpSocket.SendTo(s.ToArray(), remote);
                     }
                     else
                     {
-                        if (!challengeData.ContainsKey(remote)) StarryboundServer.logError("RCON: Illegal A2S_PLAYER request received from " + remote + ". No challenge number has been issued to this address.");
+                        if (!challengeData.ContainsKey(remote)) StarshipServer.logError("RCON: Illegal A2S_PLAYER request received from " + remote + ". No challenge number has been issued to this address.");
                         else
                         {
                             var s = new MemoryStream();
                             s.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF }, 0, 4);
                             s.WriteByte(0x44);
 
-                            s.WriteByte(Convert.ToByte((uint)StarryboundServer.clientCount));
+                            s.WriteByte(Convert.ToByte((uint)StarshipServer.clientCount));
 
-                            List<Client> clientList = StarryboundServer.getClients();
+                            List<Client> clientList = StarshipServer.getClients();
 
                             for (var i = 0; i < clientList.Count; i++)
                             {
@@ -223,18 +223,18 @@ namespace com.avilance.Starrybound
                                 connected = BitConverter.GetBytes(seconds);
                                 s.Write(connected, 0, connected.Length);
 
-                                StarryboundServer.logDebug("ListenerThread::SourceA2SPlayer", "Client ID #" + i + ": " + Utils.ByteArrayToString(new byte[] { Convert.ToByte((uint)i) }) + Utils.ByteArrayToString(name) + Utils.ByteArrayToString(score) + Utils.ByteArrayToString(connected));
+                                StarshipServer.logDebug("ListenerThread::SourceA2SPlayer", "Client ID #" + i + ": " + Utils.ByteArrayToString(new byte[] { Convert.ToByte((uint)i) }) + Utils.ByteArrayToString(name) + Utils.ByteArrayToString(score) + Utils.ByteArrayToString(connected));
                             }
 
-                            StarryboundServer.logInfo("RCON: Sending A2S_PLAYER Response packet for " + StarryboundServer.clientCount + " player(s) to " + remote);
-                            StarryboundServer.logDebug("ListenerThread::SourceA2SPlayer", "RCON: Dump packet: " + Utils.ByteArrayToString(s.ToArray()));
+                            StarshipServer.logInfo("RCON: Sending A2S_PLAYER Response packet for " + StarshipServer.clientCount + " player(s) to " + remote);
+                            StarshipServer.logDebug("ListenerThread::SourceA2SPlayer", "RCON: Dump packet: " + Utils.ByteArrayToString(s.ToArray()));
                             udpSocket.SendTo(s.ToArray(), remote);
                         }
                     }
                     break;
 
                 default:
-                    StarryboundServer.logError("RCON: Received unknown or unsupported header byte - " + headerByte);
+                    StarshipServer.logError("RCON: Received unknown or unsupported header byte - " + headerByte);
                     break;
             }
         }
@@ -269,12 +269,12 @@ namespace com.avilance.Starrybound
 
                 string text = Encoding.UTF8.GetString(data, 0, bytesRead);
 
-                StarryboundServer.logInfo(String.Format("RCON: Received non-source request of {0} bytes from {1}: {2}", bytesRead, remote, text));
+                StarshipServer.logInfo(String.Format("RCON: Received non-source request of {0} bytes from {1}: {2}", bytesRead, remote, text));
             }
             catch (Exception e)
             {
-                StarryboundServer.logError("Bad RCON request received. " + e.ToString());
-                StarryboundServer.logError("RCON: Binary data: " + Utils.ByteArrayToString(data));
+                StarshipServer.logError("Bad RCON request received. " + e.ToString());
+                StarshipServer.logError("RCON: Binary data: " + Utils.ByteArrayToString(data));
             }
         }
     }

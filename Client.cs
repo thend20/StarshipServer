@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using System;
@@ -18,12 +18,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Extensions;
-using com.avilance.Starrybound.Packets;
-using com.avilance.Starrybound.Permissions;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Extensions;
+using com.avilance.Starship.Packets;
+using com.avilance.Starship.Permissions;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     class Client
@@ -66,33 +66,33 @@ namespace com.avilance.Starrybound
 
                 this.playerData.ip = ipep.Address.ToString();
 
-                StarryboundServer.logInfo("[" + playerData.client + "] Accepting new connection.");
+                StarshipServer.logInfo("[" + playerData.client + "] Accepting new connection.");
 
-                if((int)StarryboundServer.serverState < 3)
+                if((int)StarshipServer.serverState < 3)
                 {
                     MemoryStream packet = new MemoryStream();
                     BinaryWriter packetWrite = new BinaryWriter(packet);
-                    packetWrite.WriteBE(StarryboundServer.ProtocolVersion);
+                    packetWrite.WriteBE(StarshipServer.ProtocolVersion);
                     this.sendClientPacket(Packet.ProtocolVersion, packet.ToArray());
 
                     rejectPreConnected("Connection Failed: The server is not ready yet.");
                     return;
                 }
-                else if ((int)StarryboundServer.serverState > 3)
+                else if ((int)StarshipServer.serverState > 3)
                 {
                     MemoryStream packet = new MemoryStream();
                     BinaryWriter packetWrite = new BinaryWriter(packet);
-                    packetWrite.WriteBE(StarryboundServer.ProtocolVersion);
+                    packetWrite.WriteBE(StarshipServer.ProtocolVersion);
                     this.sendClientPacket(Packet.ProtocolVersion, packet.ToArray());
 
                     rejectPreConnected("Connection Failed: The server is shutting down.");
                     return;
                 }
-                else if (StarryboundServer.restartTime != 0)
+                else if (StarshipServer.restartTime != 0)
                 {
                     MemoryStream packet = new MemoryStream();
                     BinaryWriter packetWrite = new BinaryWriter(packet);
-                    packetWrite.WriteBE(StarryboundServer.ProtocolVersion);
+                    packetWrite.WriteBE(StarshipServer.ProtocolVersion);
                     this.sendClientPacket(Packet.ProtocolVersion, packet.ToArray());
 
                     rejectPreConnected("Connection Failed: The server is restarting.");
@@ -100,21 +100,21 @@ namespace com.avilance.Starrybound
                 }
 
                 sSocket = new TcpClient();
-                sSocket.ReceiveTimeout = StarryboundServer.config.internalSocketTimeout * 1000;
-                sSocket.SendTimeout = StarryboundServer.config.internalSocketTimeout * 1000;
-                IAsyncResult result = sSocket.BeginConnect((StarryboundServer.config.proxyIP.Equals("0.0.0.0") ? IPAddress.Loopback : IPAddress.Parse(StarryboundServer.config.proxyIP)), StarryboundServer.config.serverPort, null, null);
+                sSocket.ReceiveTimeout = StarshipServer.config.internalSocketTimeout * 1000;
+                sSocket.SendTimeout = StarshipServer.config.internalSocketTimeout * 1000;
+                IAsyncResult result = sSocket.BeginConnect((StarshipServer.config.proxyIP.Equals("0.0.0.0") ? IPAddress.Loopback : IPAddress.Parse(StarshipServer.config.proxyIP)), StarshipServer.config.serverPort, null, null);
                 bool success = result.AsyncWaitHandle.WaitOne(3000, true);
                 if (!success || !sSocket.Connected)
                 {
-                    StarryboundServer.failedConnections++;
-                    if (StarryboundServer.failedConnections >= StarryboundServer.config.maxFailedConnections)
+                    StarshipServer.failedConnections++;
+                    if (StarshipServer.failedConnections >= StarshipServer.config.maxFailedConnections)
                     {
-                        StarryboundServer.logFatal(StarryboundServer.failedConnections + " clients failed to connect in a row. Restarting...");
-                        StarryboundServer.serverState = ServerState.Crashed;
+                        StarshipServer.logFatal(StarshipServer.failedConnections + " clients failed to connect in a row. Restarting...");
+                        StarshipServer.serverState = ServerState.Crashed;
                     }
                     MemoryStream packet = new MemoryStream();
                     BinaryWriter packetWrite = new BinaryWriter(packet);
-                    packetWrite.WriteBE(StarryboundServer.ProtocolVersion);
+                    packetWrite.WriteBE(StarshipServer.ProtocolVersion);
                     this.sendClientPacket(Packet.ProtocolVersion, packet.ToArray());
                     rejectPreConnected("Connection Failed: Unable to connect to the parent server.");
                     return;
@@ -133,15 +133,15 @@ namespace com.avilance.Starrybound
                 this.ClientForwarder = new Thread(new ThreadStart(new ForwardThread(this, this.cIn, this.sOut, Direction.Client).run));
                 ClientForwarder.Start();
 
-                StarryboundServer.failedConnections = 0;
+                StarshipServer.failedConnections = 0;
             }
             catch (Exception e)
             {
-                StarryboundServer.logException("ClientThread Exception: " + e.ToString());
-                StarryboundServer.failedConnections++;
+                StarshipServer.logException("ClientThread Exception: " + e.ToString());
+                StarshipServer.failedConnections++;
                 MemoryStream packet = new MemoryStream();
                 BinaryWriter packetWrite = new BinaryWriter(packet);
-                packetWrite.WriteBE(StarryboundServer.ProtocolVersion);
+                packetWrite.WriteBE(StarshipServer.ProtocolVersion);
                 this.sendClientPacket(Packet.ProtocolVersion, packet.ToArray());
                 rejectPreConnected("Connection Failed: A internal server error occurred (1)");
             }
@@ -240,23 +240,23 @@ namespace com.avilance.Starrybound
         {
             if (this.state == ClientState.Disposing) return;
             this.state = ClientState.Disposing;
-            StarryboundServer.logInfo("[" + playerData.client + "] " + logMessage);
+            StarshipServer.logInfo("[" + playerData.client + "] " + logMessage);
             try
             {
                 if (this.playerData.name != null)
                 {
-                    Client target = StarryboundServer.getClient(this.playerData.name);
+                    Client target = StarshipServer.getClient(this.playerData.name);
                     if (target != null)
                     {
                         Users.SaveUser(this.playerData);
-                        StarryboundServer.removeClient(this);
-                        if (this.kickTargetTimestamp == 0) StarryboundServer.sendGlobalMessage(this.playerData.name + " has left the server.");
+                        StarshipServer.removeClient(this);
+                        if (this.kickTargetTimestamp == 0) StarshipServer.sendGlobalMessage(this.playerData.name + " has left the server.");
                     }
                 }
             }
             catch (Exception e)
             {
-                StarryboundServer.logException("Failed to remove client from clients: " + e.ToString());
+                StarshipServer.logException("Failed to remove client from clients: " + e.ToString());
             }
             try
             {
@@ -283,7 +283,7 @@ namespace com.avilance.Starrybound
             sendChatMessage("^#f75d5d;" + reason);
             kickTargetTimestamp = Utils.getTimestamp() + 6;
             sendServerPacket(Packet.ClientDisconnect, new byte[1]);
-            StarryboundServer.logInfo("[" + playerData.client + "] is being kicked for " + reason);
+            StarshipServer.logInfo("[" + playerData.client + "] is being kicked for " + reason);
         }
 
         public void delayDisconnect(string reason, string message)
@@ -292,8 +292,8 @@ namespace com.avilance.Starrybound
             sendChatMessage("^#f75d5d;" + reason);
             kickTargetTimestamp = Utils.getTimestamp() + 6;
             sendServerPacket(Packet.ClientDisconnect, new byte[1]);
-            StarryboundServer.sendGlobalMessage("^#f75d5d;" + message);
-            StarryboundServer.logInfo("[" + playerData.client + "] is being kicked for " + message);
+            StarshipServer.sendGlobalMessage("^#f75d5d;" + message);
+            StarshipServer.logInfo("[" + playerData.client + "] is being kicked for " + message);
         }
 
         public void rejectPreConnected(string reason)

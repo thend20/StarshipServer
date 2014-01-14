@@ -1,21 +1,21 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using com.avilance.Starrybound.Permissions;
+using com.avilance.Starship.Permissions;
 
-namespace com.avilance.Starrybound.Commands
+namespace com.avilance.Starship.Commands
 {
     class GroupC : CommandBase
     {
@@ -46,7 +46,7 @@ namespace com.avilance.Starrybound.Commands
             if (command == "list") // List all groups start
             {
                 string groupList = "";
-                foreach (Group group in StarryboundServer.groups.Values)
+                foreach (Group group in StarshipServer.groups.Values)
                 {
                     groupList += group.name + ", ";
                 }
@@ -73,7 +73,7 @@ namespace com.avilance.Starrybound.Commands
                 pPerms.Add("client.*", true);
                 pPerms.Add("chat.*", true);
                 Group newGroup = new Group(groupName, null, null, pPerms);
-                StarryboundServer.groups.Add(newGroup.name, newGroup);
+                StarshipServer.groups.Add(newGroup.name, newGroup);
                 Groups.SaveGroups();
                 this.client.sendCommandMessage("New group " + newGroup.name + " has been added.");
                 return true;
@@ -94,15 +94,15 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                Client target = StarryboundServer.getClient(playerName);
+                Client target = StarshipServer.getClient(playerName);
                 if (target != null)
                 {
-                    if (StarryboundServer.groups.ContainsKey(groupName))
+                    if (StarshipServer.groups.ContainsKey(groupName))
                     {
                         PlayerData playerData = target.playerData;
-                        playerData.group = StarryboundServer.groups[groupName];
+                        playerData.group = StarshipServer.groups[groupName];
                         this.client.sendCommandMessage("Player " + playerName + " has been added to group " + groupName + ".");
-                        StarryboundServer.sendGlobalMessage(playerName + " has been assigned the group " + groupName);
+                        StarshipServer.sendGlobalMessage(playerName + " has been assigned the group " + groupName);
                         Users.SaveUser(playerData);
                         return true;
                     }
@@ -133,13 +133,13 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                Client target = StarryboundServer.getClient(playerName);
+                Client target = StarshipServer.getClient(playerName);
                 if (target != null)
                 {
                     PlayerData playerData = target.playerData;
-                    playerData.group = StarryboundServer.groups[StarryboundServer.defaultGroup];
+                    playerData.group = StarshipServer.groups[StarshipServer.defaultGroup];
                     this.client.sendCommandMessage("Player " + playerName + " has had their access revoked.");
-                    StarryboundServer.sendGlobalMessage(playerName + " has been demoted to " + StarryboundServer.defaultGroup);
+                    StarshipServer.sendGlobalMessage(playerName + " has been demoted to " + StarshipServer.defaultGroup);
                     Users.SaveUser(playerData);
                     return true;
                 }
@@ -164,9 +164,9 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                if (StarryboundServer.groups.ContainsKey(groupName))
+                if (StarshipServer.groups.ContainsKey(groupName))
                 {
-                    StarryboundServer.groups.Remove(groupName);
+                    StarshipServer.groups.Remove(groupName);
                     Groups.SaveGroups();
                     this.client.sendCommandMessage("Group " + groupName + " has been removed.");
                     return true;
@@ -192,9 +192,9 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                if (StarryboundServer.groups.ContainsKey(groupName))
+                if (StarshipServer.groups.ContainsKey(groupName))
                 {
-                    Group targetGroup = StarryboundServer.groups[groupName];
+                    Group targetGroup = StarshipServer.groups[groupName];
                     this.client.sendCommandMessage("Group info: Name: " + targetGroup.name + "; Prefix: " + (String.IsNullOrEmpty(targetGroup.prefix) ? "None" : targetGroup.prefix) + "; Name color: " + (String.IsNullOrEmpty(targetGroup.nameColor) ? "None" : targetGroup.nameColor));
                     return true;
                 }
@@ -222,9 +222,9 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                if (StarryboundServer.groups.ContainsKey(groupName))
+                if (StarshipServer.groups.ContainsKey(groupName))
                 {
-                    Group targetGroup = StarryboundServer.groups[groupName];
+                    Group targetGroup = StarshipServer.groups[groupName];
                     if (modCommand == "prefix")
                     {
                         targetGroup.prefix = modValue;
@@ -276,9 +276,9 @@ namespace com.avilance.Starrybound.Commands
                     return false;
                 }
 
-                if (StarryboundServer.groups.ContainsKey(groupName))
+                if (StarshipServer.groups.ContainsKey(groupName))
                 {
-                    Group targetGroup = StarryboundServer.groups[groupName];
+                    Group targetGroup = StarshipServer.groups[groupName];
 
                     if (prmCommand == "list")
                     {

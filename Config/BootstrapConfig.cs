@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using Newtonsoft.Json;
@@ -17,10 +17,10 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using System.Threading;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class BootstrapConfig
     {
@@ -30,8 +30,8 @@ namespace com.avilance.Starrybound
         {
             if (File.Exists(BootstrapPath))
             {
-                StarryboundServer.bootstrapConfig = BootstrapFile.Read(BootstrapPath);
-                StarryboundServer.SavePath = StarryboundServer.bootstrapConfig.storageDirectory + Path.DirectorySeparatorChar + "starrybound";
+                StarshipServer.bootstrapConfig = BootstrapFile.Read(BootstrapPath);
+                StarshipServer.SavePath = StarshipServer.bootstrapConfig.storageDirectory + Path.DirectorySeparatorChar + "starship";
             }
             else
             {
@@ -39,9 +39,9 @@ namespace com.avilance.Starrybound
                 Thread.Sleep(5000);
                 Environment.Exit(7);
             }
-            if (!Directory.Exists(StarryboundServer.SavePath))
+            if (!Directory.Exists(StarshipServer.SavePath))
             {
-                Directory.CreateDirectory(StarryboundServer.SavePath);
+                Directory.CreateDirectory(StarshipServer.SavePath);
             }
         }
     }
@@ -75,7 +75,7 @@ namespace com.avilance.Starrybound
             }
             catch (Exception)
             {
-                StarryboundServer.logFatal("bootstrap.config file is unreadable. The server start cannot continue.");
+                StarshipServer.logFatal("bootstrap.config file is unreadable. The server start cannot continue.");
                 Thread.Sleep(5000);
                 Environment.Exit(6);
             }

@@ -5,9 +5,9 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Threading;
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class ServerThread
     {
@@ -19,7 +19,7 @@ namespace com.avilance.Starrybound
 
         public void run()
         {
-            var executableName = "starbound_server" + (StarryboundServer.IsMono ? "" : ".exe");
+            var executableName = "starbound_server" + (StarshipServer.IsMono ? "" : ".exe");
             try
             {
                 ProcessStartInfo startInfo = new ProcessStartInfo(executableName)
@@ -30,19 +30,19 @@ namespace com.avilance.Starrybound
                     CreateNoWindow = true
                 };
                 process = Process.Start(startInfo);
-                StarryboundServer.parentProcessId = process.Id;
+                StarshipServer.parentProcessId = process.Id;
                 File.WriteAllText("starbound_server.pid", process.Id.ToString());
                 process.OutputDataReceived += (sender, e) => parseOutput(e.Data);
                 process.ErrorDataReceived += (sender, e) => logStarboundError("ErrorDataReceived from starbound_server.exe: " + e.Data);
                 process.BeginOutputReadLine();
                 process.WaitForExit();
-                StarryboundServer.serverState = ServerState.Crashed;
+                StarshipServer.serverState = ServerState.Crashed;
             }
             catch (ThreadAbortException) { }
             catch (Exception e)
             {
-                StarryboundServer.logException("Unable to start starbound_server.exe, is this file in the same directory? " + e.ToString());
-                StarryboundServer.serverState = ServerState.Crashed;
+                StarshipServer.logException("Unable to start starbound_server.exe, is this file in the same directory? " + e.ToString());
+                StarshipServer.serverState = ServerState.Crashed;
             }
         }
 
@@ -78,7 +78,7 @@ namespace com.avilance.Starrybound
                     float millis = Convert.ToSingle(perf[2]);
                     if (millis > 5000)
                     {
-                        StarryboundServer.logWarn("Parent Server [" + function + "] lagged for " + (millis / 1000) + " seconds");
+                        StarshipServer.logWarn("Parent Server [" + function + "] lagged for " + (millis / 1000) + " seconds");
                     }
                     return;
                 }
@@ -88,24 +88,24 @@ namespace com.avilance.Starrybound
                     string versionName = versionString[1];
                     int protocolVersion = int.Parse(versionString[3]);
                     int versionMinor = int.Parse(versionString[5]);
-                    StarryboundServer.starboundVersion.Protocol = protocolVersion;
-                    StarryboundServer.starboundVersion.Minor = versionMinor;
-                    StarryboundServer.starboundVersion.Name = versionName;
-                    if (protocolVersion != StarryboundServer.ProtocolVersion)
+                    StarshipServer.starboundVersion.Protocol = protocolVersion;
+                    StarshipServer.starboundVersion.Minor = versionMinor;
+                    StarshipServer.starboundVersion.Name = versionName;
+                    if (protocolVersion != StarshipServer.ProtocolVersion)
                     {
-                        StarryboundServer.logFatal("Detected protcol version [" + protocolVersion + "] != [" + StarryboundServer.ProtocolVersion + "] to expected protocol version!");
+                        StarshipServer.logFatal("Detected protcol version [" + protocolVersion + "] != [" + StarshipServer.ProtocolVersion + "] to expected protocol version!");
                         Thread.Sleep(5000);
                         Environment.Exit(4);
                     }
                 }
                 else if (consoleLine.Contains("TcpServer will close, listener thread caught exception"))
                 {
-                    StarryboundServer.logFatal("Parent Server TcpServer listener thread caught exception, Forcing a restart.");
-                    StarryboundServer.serverState = ServerState.Crashed;
+                    StarshipServer.logFatal("Parent Server TcpServer listener thread caught exception, Forcing a restart.");
+                    StarshipServer.serverState = ServerState.Crashed;
                 }
                 else if (consoleLine.Contains("TcpServer listening on: "))
                 {
-                    StarryboundServer.serverState = ServerState.StarboundReady;
+                    StarshipServer.serverState = ServerState.StarboundReady;
                     ServerConfig.RemovePrivateConfig();
                 }
                 else if (consoleLine.StartsWith("Info: Kicking client "))
@@ -114,7 +114,7 @@ namespace com.avilance.Starrybound
                     string user = kick[0];
                     string id = kick[1];
                     string ip = kick[2];
-                    StarryboundServer.logWarn("Parent Server disconnected " + user + " " + ip + " for inactivity.");
+                    StarshipServer.logWarn("Parent Server disconnected " + user + " " + ip + " for inactivity.");
                     return;
                 }
 
@@ -126,7 +126,7 @@ namespace com.avilance.Starrybound
 
         void logStarboundError(string errStr)
         {
-            using (StreamWriter w = File.AppendText(Path.Combine(StarryboundServer.SavePath, "server-errors.log")))
+            using (StreamWriter w = File.AppendText(Path.Combine(StarshipServer.SavePath, "server-errors.log")))
             {
                 w.WriteLine(errStr);
             }

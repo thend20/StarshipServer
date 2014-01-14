@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using com.avilance.Starrybound.Extensions;
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Permissions;
+using com.avilance.Starship.Extensions;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Permissions;
 
-namespace com.avilance.Starrybound.Commands
+namespace com.avilance.Starship.Commands
 {
     class StarterItems : CommandBase
     {
@@ -26,7 +26,7 @@ namespace com.avilance.Starrybound.Commands
                 return false;
             }
 
-            if (StarryboundServer.config.starterItems == null || StarryboundServer.config.starterItems.Length <= 0)
+            if (StarshipServer.config.starterItems == null || StarshipServer.config.starterItems.Length <= 0)
             {
                 client.sendCommandMessage("Sorry! This server does not provide any starting items.");
                 return false;
@@ -34,7 +34,7 @@ namespace com.avilance.Starrybound.Commands
 
             int awardedItems = 0;
 
-            foreach (string item in StarryboundServer.config.starterItems)
+            foreach (string item in StarshipServer.config.starterItems)
             {
                 if (String.IsNullOrEmpty(item) || String.IsNullOrWhiteSpace(item))
                 {

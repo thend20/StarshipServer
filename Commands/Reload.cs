@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace com.avilance.Starrybound.Commands
+namespace com.avilance.Starship.Commands
 {
     class Reload : CommandBase
     {

@@ -1,25 +1,25 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starrybound.Util;
+using com.avilance.Starship.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using com.avilance.Starrybound.Extensions;
-using com.avilance.Starrybound.Permissions;
+using com.avilance.Starship.Extensions;
+using com.avilance.Starship.Permissions;
 
-namespace com.avilance.Starrybound.Packets
+namespace com.avilance.Starship.Packets
 {
     class Packet7ClientConnect : PacketBase
     {
@@ -47,9 +47,9 @@ namespace com.avilance.Starrybound.Packets
             this.client.playerData.account = account;
 
             User userPData = Users.GetUser(name, this.client.playerData.uuid, this.client.playerData.ip);
-            if (StarryboundServer.config.maxClients <= StarryboundServer.clientCount)
+            if (StarshipServer.config.maxClients <= StarshipServer.clientCount)
             {
-                if (!userPData.getGroup().hasPermission("admin.chat") || StarryboundServer.clientCount == (StarryboundServer.serverConfig.maxPlayers - 1))
+                if (!userPData.getGroup().hasPermission("admin.chat") || StarshipServer.clientCount == (StarshipServer.serverConfig.maxPlayers - 1))
                 {
                     this.client.rejectPreConnected("The server is full. Please try again later.");
                     return false;
@@ -64,10 +64,10 @@ namespace com.avilance.Starrybound.Packets
             }
 
             string sAssetDigest = Utils.ByteArrayToString(assetDigest);
-            StarryboundServer.logDebug("AssetDigest", "[" + this.client.playerData.client + "] [" + sAssetDigest + "]");
-            if (!StarryboundServer.config.allowModdedClients)
+            StarshipServer.logDebug("AssetDigest", "[" + this.client.playerData.client + "] [" + sAssetDigest + "]");
+            if (!StarshipServer.config.allowModdedClients)
             {
-                if (sAssetDigest != StarryboundServer.unmoddedClientDigest)
+                if (sAssetDigest != StarshipServer.unmoddedClientDigest)
                 {
                     this.client.rejectPreConnected("Modded client detected: You cannot modify or add asset files or mods. Please delete your entire Starbound folder and reinstall Starbound to join.");
                     return false;
@@ -80,7 +80,7 @@ namespace com.avilance.Starrybound.Packets
                 return false;
             }
 
-            if (!StarryboundServer.config.allowSpaces)
+            if (!StarshipServer.config.allowSpaces)
             {
                 if (this.client.playerData.name.Contains(" "))
                 {
@@ -89,7 +89,7 @@ namespace com.avilance.Starrybound.Packets
                 }
             }
 
-            if (!StarryboundServer.config.allowSymbols)
+            if (!StarshipServer.config.allowSymbols)
             {
                 Regex r = new Regex("^[a-zA-Z0-9_\\- ]*$");
                 if (!r.IsMatch(this.client.playerData.name))
@@ -101,7 +101,7 @@ namespace com.avilance.Starrybound.Packets
 
             if (!userPData.getGroup().hasPermission("admin.bypassban"))
             {
-                foreach (string bannedUnamePhrase in StarryboundServer.config.bannedUsernames)
+                foreach (string bannedUnamePhrase in StarshipServer.config.bannedUsernames)
                 {
                     if (this.client.playerData.name.ToLower().Contains(bannedUnamePhrase.ToLower()))
                     {
@@ -131,7 +131,7 @@ namespace com.avilance.Starrybound.Packets
                 pData.shipBlacklist = userPData.shipBlacklist;
                 pData.shipWhitelist = userPData.shipWhitelist;
 
-                if (userPData.uuid != pData.uuid && userPData.groupName != StarryboundServer.defaultGroup)
+                if (userPData.uuid != pData.uuid && userPData.groupName != StarshipServer.defaultGroup)
                 {
                     this.client.rejectPreConnected("Connection Failed: You cannot use \"" + pData.name + "\" on this server.");
                     return false;
@@ -143,11 +143,11 @@ namespace com.avilance.Starrybound.Packets
                 return false;
             }
 
-            foreach (Client checkClient in StarryboundServer.getClients())
+            foreach (Client checkClient in StarshipServer.getClients())
             {
                 if (checkClient.playerData.name.ToLower() == name.ToLower())
                 {
-                    if (userPData.groupName != StarryboundServer.defaultGroup)
+                    if (userPData.groupName != StarshipServer.defaultGroup)
                     {
                         checkClient.delayDisconnect("Someone else is attempting to connect with your name. Disconnecting.");
                         this.client.rejectPreConnected("We have disconnected the old player on the server. Please try again in 15 seconds.");

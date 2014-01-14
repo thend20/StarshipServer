@@ -1,18 +1,18 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 
-using com.avilance.Starrybound.Packets;
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Extensions;
+using com.avilance.Starship.Packets;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,13 +22,13 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starrybound.Permissions;
+using com.avilance.Starship.Permissions;
 using MaxMind;
 using System.Net;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
-    class StarryboundServer
+    class StarshipServer
     {
         public static string SavePath;
         public static BootstrapFile bootstrapConfig = new BootstrapFile();
@@ -123,7 +123,7 @@ namespace com.avilance.Starrybound
 #endif
             startTime = Utils.getTimestamp();
             serverState = ServerState.Starting;
-            Console.Title = "Loading... Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")";
+            Console.Title = "Loading... Starship Server (" + VersionNum + ") (" + ProtocolVersion + ")";
 
             try
             {
@@ -138,7 +138,7 @@ namespace com.avilance.Starrybound
             monitorThread.Start();
 
             if (IsMono)
-                Environment.CurrentDirectory = Path.GetDirectoryName(typeof(StarryboundServer).Assembly.Location);
+                Environment.CurrentDirectory = Path.GetDirectoryName(typeof(StarshipServer).Assembly.Location);
 
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(ProcessExit);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(UnhandledException);
@@ -152,12 +152,12 @@ namespace com.avilance.Starrybound
             writeLog("-- Log Start: " + DateTime.Now + " --", LogType.FileOnly);
 
             logInfo("##############################################");
-            logInfo("####   Avilance Ltd. Starrybound Server   ####");
+            logInfo("####   Avilance Ltd. Starship Server   ####");
             logInfo("####   Copyright (c) Avilance Ltd. 2013   ####");
             logInfo("####       Licensed under the GPLv3       ####");
             logInfo("##############################################");
             logInfo("Version: " + VersionNum + " (" + ProtocolVersion + ")");
-            logInfo("Loading Starrybound Server...");
+            logInfo("Loading Starship Server...");
 
             Config.SetupConfig();
             ServerConfig.SetupConfig();
@@ -193,7 +193,7 @@ namespace com.avilance.Starrybound
             }
             Bans.ProcessBans();
 
-            logInfo("Starrybound Server initialization complete.");
+            logInfo("Starship Server initialization complete.");
 
             listener = new ListenerThread();
             listenerThread = new Thread(new ThreadStart(listener.runTcp));
@@ -205,7 +205,7 @@ namespace com.avilance.Starrybound
             while (serverState != ServerState.ListenerReady) { }
             if ((int)serverState > 3) return;
 
-            Console.Title = "Starting... Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")";
+            Console.Title = "Starting... Starship Server (" + VersionNum + ") (" + ProtocolVersion + ")";
 #if !NOSERVER
             logInfo("Starting parent Starbound server - This may take a few moments...");
             sbServer = new ServerThread();
@@ -214,7 +214,7 @@ namespace com.avilance.Starrybound
             while (serverState != ServerState.StarboundReady) { }
             if ((int)serverState > 3) return;
 #endif
-            logInfo("Parent Starbound server is ready. Starrybound Server now accepting connections.");
+            logInfo("Parent Starbound server is ready. Starship Server now accepting connections.");
             serverState = ServerState.Running;
 
             //Keep this last!
@@ -228,7 +228,7 @@ namespace com.avilance.Starrybound
             while (true)
             {
                 if (lastCount != clientCount && serverState == ServerState.Running)
-                    Console.Title = serverConfig.serverName + " (" + clientCount + "/" + config.maxClients + ") - Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")";
+                    Console.Title = serverConfig.serverName + " (" + clientCount + "/" + config.maxClients + ") - Starship Server (" + VersionNum + ") (" + ProtocolVersion + ")";
 
                 if (logWriteBuffer.Count > 0)
                 {
@@ -318,7 +318,7 @@ namespace com.avilance.Starrybound
         {
             if (shuttingDown) return;
             shuttingDown = true;
-            Console.Title = "Shutting Down... Starrybound Server (" + VersionNum + ") (" + ProtocolVersion + ")";
+            Console.Title = "Shutting Down... Starship Server (" + VersionNum + ") (" + ProtocolVersion + ")";
             logInfo("Starting graceful shutdown...");
             try
             {

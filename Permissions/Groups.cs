@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using Newtonsoft.Json;
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace com.avilance.Starrybound.Permissions
+namespace com.avilance.Starship.Permissions
 {
     public class Group
     {
@@ -73,7 +73,7 @@ namespace com.avilance.Starrybound.Permissions
 
     class Groups 
     {
-        internal static string GroupsPath { get { return Path.Combine(StarryboundServer.SavePath, "groups.json"); } }
+        internal static string GroupsPath { get { return Path.Combine(StarshipServer.SavePath, "groups.json"); } }
 
         public static void SetupGroups()
         {
@@ -103,27 +103,27 @@ namespace com.avilance.Starrybound.Permissions
 
             foreach (Group group in groupList)
             {
-                StarryboundServer.groups.Add(group.name, group);
+                StarshipServer.groups.Add(group.name, group);
                 if (group.isDefault) defaultGroup = group.name;
             }
 
             if (String.IsNullOrWhiteSpace(defaultGroup))
             {
-                StarryboundServer.logFatal("Default user group flag (isDefault) is not set for any groups - Please set this in the groups.json!");
+                StarshipServer.logFatal("Default user group flag (isDefault) is not set for any groups - Please set this in the groups.json!");
                 Thread.Sleep(5000);
                 Environment.Exit(5);
             }
 
-            StarryboundServer.defaultGroup = defaultGroup;
+            StarshipServer.defaultGroup = defaultGroup;
 
-            StarryboundServer.logInfo("Loaded " + StarryboundServer.groups.Count + " group(s). Default group is " + defaultGroup);
+            StarshipServer.logInfo("Loaded " + StarshipServer.groups.Count + " group(s). Default group is " + defaultGroup);
         }
 
         public static object getGroup(string name)
         {
             try
             {
-                return StarryboundServer.groups[name];
+                return StarshipServer.groups[name];
             }
             catch (Exception)
             {
@@ -194,7 +194,7 @@ namespace com.avilance.Starrybound.Permissions
             using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 List<Group> file = Read(fs);
-                StarryboundServer.logInfo("Starrybound groups loaded successfully.");
+                StarshipServer.logInfo("Starship groups loaded successfully.");
                 return file;
             }
         }
@@ -210,7 +210,7 @@ namespace com.avilance.Starrybound.Permissions
             }
             catch (Exception)
             {
-                StarryboundServer.logException("Server player groups are unreadable - Re-creating config with default values");
+                StarshipServer.logException("Server player groups are unreadable - Re-creating config with default values");
                 return DefaultGroups();
             }
         }
@@ -226,11 +226,11 @@ namespace com.avilance.Starrybound.Permissions
         public static void Write(Stream stream)
         {
             List<Group> groupList;
-            if (StarryboundServer.groups.Count > 0)
+            if (StarshipServer.groups.Count > 0)
             {
                 groupList = new List<Group>();
 
-                foreach (Group group in StarryboundServer.groups.Values)
+                foreach (Group group in StarshipServer.groups.Values)
                 {
                     groupList.Add(group);
                 }

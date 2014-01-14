@@ -7,8 +7,8 @@
     <ProjectGuid>{B522F638-203F-4A9F-B2F5-B77149B85F1B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>com.avilance.Starrybound</RootNamespace>
-    <AssemblyName>starrybound_server</AssemblyName>
+    <RootNamespace>com.avilance.Starship</RootNamespace>
+    <AssemblyName>starship_server</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
@@ -51,7 +51,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>com.avilance.Starrybound.StarryboundServer</StartupObject>
+    <StartupObject>com.avilance.Starship.StarshipServer</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NoServerDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -149,7 +149,7 @@
     <Compile Include="Config\BootstrapConfig.cs" />
     <Compile Include="Config\ServerConfig.cs" />
     <Compile Include="ServerThread.cs" />
-    <Compile Include="StarryboundServer.cs" />
+    <Compile Include="StarshipServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Enums.cs" />
     <Compile Include="Utils\GeoIPCountry.cs" />
@@ -157,7 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="StarryboundServer.licenseheader" />
+    <None Include="StarshipServer.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libs\Ionic.Zlib.dll" />

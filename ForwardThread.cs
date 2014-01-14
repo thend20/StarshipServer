@@ -1,12 +1,12 @@
 ﻿/* 
- * Starrybound Server
+ * Starship Server
  * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
- * This file is a part of Starrybound Server.
- * Starrybound Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * Starrybound Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License along with Starrybound Server. If not, see http://www.gnu.org/licenses/.
+ * This file is a part of Starship Server.
+ * Starship Server is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * Starship Server is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
 using System;
@@ -15,13 +15,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using com.avilance.Starrybound.Util;
-using com.avilance.Starrybound.Extensions;
+using com.avilance.Starship.Util;
+using com.avilance.Starship.Extensions;
 using Ionic.Zlib;
-using com.avilance.Starrybound.Packets;
+using com.avilance.Starship.Packets;
 using System.Threading;
 
-namespace com.avilance.Starrybound
+namespace com.avilance.Starship
 {
     class ForwardThread
     {
@@ -135,7 +135,7 @@ namespace com.avilance.Starrybound
                                     while (true)
                                     {
                                         if (this.client.state == ClientState.Connected) break;
-                                        if (Utils.getTimestamp() > startTime + StarryboundServer.config.connectTimeout)
+                                        if (Utils.getTimestamp() > startTime + StarshipServer.config.connectTimeout)
                                         {
                                             this.client.rejectPreConnected("Connection Failed: Server did not respond in time.");
                                             return;
@@ -159,7 +159,7 @@ namespace com.avilance.Starrybound
                                 passwordSalt = Utils.GenerateSecureSalt();
                                 packetWrite.WriteStarString("");
                                 packetWrite.WriteStarString(passwordSalt);
-                                packetWrite.WriteBE(StarryboundServer.config.passwordRounds);
+                                packetWrite.WriteBE(StarshipServer.config.passwordRounds);
                                 this.client.sendClientPacket(Packet.HandshakeChallenge, packet.ToArray());
                             }
                             else if (packetID == Packet.HandshakeResponse)
@@ -167,7 +167,7 @@ namespace com.avilance.Starrybound
                                 string claimResponse = packetData.ReadStarString();
                                 string passwordHash = packetData.ReadStarString();
 
-                                string verifyHash = Utils.StarHashPassword(StarryboundServer.config.proxyPass, this.client.playerData.account + passwordSalt, StarryboundServer.config.passwordRounds);
+                                string verifyHash = Utils.StarHashPassword(StarshipServer.config.proxyPass, this.client.playerData.account + passwordSalt, StarshipServer.config.passwordRounds);
                                 if (passwordHash != verifyHash)
                                 {
                                     this.client.rejectPreConnected("Your password was incorrect.");
@@ -184,13 +184,13 @@ namespace com.avilance.Starrybound
                                 string player = packetData.ReadStarString();
                                 if (cmd == WarpType.WarpToPlayerShip)
                                 {
-                                    Client target = StarryboundServer.getClient(player);
+                                    Client target = StarshipServer.getClient(player);
                                     if (target != null)
                                     {
                                         if (!this.client.playerData.canAccessShip(target.playerData))
                                         {
                                             this.client.sendChatMessage("^#5dc4f4;You cannot access this player's ship due to their ship access settings.");
-                                            StarryboundServer.logDebug("ShipAccess", "Preventing " + this.client.playerData.name + " from accessing " + target.playerData.name + "'s ship.");
+                                            StarshipServer.logDebug("ShipAccess", "Preventing " + this.client.playerData.name + " from accessing " + target.playerData.name + "'s ship.");
                                             MemoryStream packetWarp = new MemoryStream();
                                             BinaryWriter packetWrite = new BinaryWriter(packetWarp);
                                             packetWrite.WriteBE((uint)WarpType.WarpToOwnShip);
@@ -201,7 +201,7 @@ namespace com.avilance.Starrybound
                                         }
                                     }
                                 }
-                                StarryboundServer.logDebug("WarpCommand", "[" + this.client.playerData.client + "][" + cmd + "]" + (coord != null ? "[" + coord.ToString() + "]" : "") + "[" + player + "]");
+                                StarshipServer.logDebug("WarpCommand", "[" + this.client.playerData.client + "][" + cmd + "]" + (coord != null ? "[" + coord.ToString() + "]" : "") + "[" + player + "]");
                             }
                             else if (packetID == Packet.ModifyTileList || packetID == Packet.DamageTileGroup || packetID == Packet.DamageTile || packetID == Packet.ConnectWire || packetID == Packet.DisconnectAllWires)
                             {
@@ -220,7 +220,7 @@ namespace com.avilance.Starrybound
                                         BinaryReader entity = new BinaryReader(new MemoryStream(entityData));
                                         string projectileKey = entity.ReadStarString();
                                         object projParams = entity.ReadStarVariant();
-                                        if (StarryboundServer.config.projectileBlacklist.Contains(projectileKey))
+                                        if (StarshipServer.config.projectileBlacklist.Contains(projectileKey))
                                         {
                                             MemoryStream packet = new MemoryStream();
                                             BinaryWriter packetWrite = new BinaryWriter(packet);
@@ -229,11 +229,11 @@ namespace com.avilance.Starrybound
                                             this.client.sendClientPacket(Packet.EntityDestroy, packet.ToArray());
                                             returnData = false;
                                         }
-                                        if (StarryboundServer.serverConfig.useDefaultWorldCoordinate && StarryboundServer.config.spawnWorldProtection)
+                                        if (StarshipServer.serverConfig.useDefaultWorldCoordinate && StarshipServer.config.spawnWorldProtection)
                                         {
                                             if (this.client.playerData.loc != null)
                                             {
-                                                if (StarryboundServer.config.projectileBlacklistSpawn.Contains(projectileKey) && StarryboundServer.spawnPlanet.Equals(this.client.playerData.loc) && !this.client.playerData.group.hasPermission("admin.spawnbuild") && !this.client.playerData.inPlayerShip)
+                                                if (StarshipServer.config.projectileBlacklistSpawn.Contains(projectileKey) && StarshipServer.spawnPlanet.Equals(this.client.playerData.loc) && !this.client.playerData.group.hasPermission("admin.spawnbuild") && !this.client.playerData.inPlayerShip)
                                                 {
                                                     MemoryStream packet = new MemoryStream();
                                                     BinaryWriter packetWrite = new BinaryWriter(packet);
@@ -280,17 +280,17 @@ namespace com.avilance.Starrybound
                                         BinaryReader entity = new BinaryReader(new MemoryStream(entityData));
                                         string projectileKey = entity.ReadStarString();
                                         object projParams = entity.ReadStarVariant();
-                                        if (StarryboundServer.config.projectileBlacklist.Contains(projectileKey))
+                                        if (StarshipServer.config.projectileBlacklist.Contains(projectileKey))
                                         {
                                             returnData = false;
                                         }
-                                        if (StarryboundServer.serverConfig.useDefaultWorldCoordinate && StarryboundServer.config.spawnWorldProtection)
+                                        if (StarshipServer.serverConfig.useDefaultWorldCoordinate && StarshipServer.config.spawnWorldProtection)
                                         {
                                             if (this.client.playerData.loc != null)
                                             {
-                                                if (StarryboundServer.config.projectileBlacklistSpawn.Contains(projectileKey) ^ StarryboundServer.config.projectileSpawnListIsWhitelist)
+                                                if (StarshipServer.config.projectileBlacklistSpawn.Contains(projectileKey) ^ StarshipServer.config.projectileSpawnListIsWhitelist)
                                                 {
-                                                    if (StarryboundServer.spawnPlanet.Equals(this.client.playerData.loc) && !this.client.playerData.group.hasPermission("admin.spawnbuild") && !this.client.playerData.inPlayerShip)
+                                                    if (StarshipServer.spawnPlanet.Equals(this.client.playerData.loc) && !this.client.playerData.group.hasPermission("admin.spawnbuild") && !this.client.playerData.inPlayerShip)
                                                     {
                                                         returnData = false;
                                                     }
@@ -320,7 +320,7 @@ namespace com.avilance.Starrybound
                             else if (packetID == Packet.ProtocolVersion)
                             {
                                 uint protocolVersion = packetData.ReadUInt32BE();
-                                if (protocolVersion != StarryboundServer.ProtocolVersion)
+                                if (protocolVersion != StarshipServer.ProtocolVersion)
                                 {
                                     MemoryStream packet = new MemoryStream();
                                     BinaryWriter packetWrite = new BinaryWriter(packet);
@@ -339,7 +339,7 @@ namespace com.avilance.Starrybound
 
                                 MemoryStream packet = new MemoryStream();
                                 BinaryWriter packetWrite = new BinaryWriter(packet);
-                                string passwordHash = Utils.StarHashPassword(StarryboundServer.privatePassword, passwordSalt, passwordRounds);
+                                string passwordHash = Utils.StarHashPassword(StarshipServer.privatePassword, passwordSalt, passwordRounds);
                                 packetWrite.WriteStarString("");
                                 packetWrite.WriteStarString(passwordHash);
                                 this.client.sendServerPacket(Packet.HandshakeResponse, packet.ToArray());
@@ -352,7 +352,7 @@ namespace com.avilance.Starrybound
                                 while (true) 
                                 {
                                     if (this.client.state == ClientState.PendingConnectResponse) break;
-                                    if (Utils.getTimestamp() > startTime + StarryboundServer.config.connectTimeout)
+                                    if (Utils.getTimestamp() > startTime + StarshipServer.config.connectTimeout)
                                     {
                                         this.client.rejectPreConnected("Connection Failed: Client did not respond with handshake.");
                                         return;
@@ -367,7 +367,7 @@ namespace com.avilance.Starrybound
                                     this.client.sendChatMessage(Config.GetMotd());
 
                                     if (!this.client.playerData.group.hasPermission("world.build"))
-                                        this.client.sendChatMessage("^#f75d5d;" + StarryboundServer.config.buildErrorMessage);
+                                        this.client.sendChatMessage("^#f75d5d;" + StarshipServer.config.buildErrorMessage);
 
                                     this.client.playerData.sentMotd = true;
                                 }
@@ -402,10 +402,10 @@ namespace com.avilance.Starrybound
                                 if (coords != null)
                                 {
                                     this.client.playerData.loc = coords;
-                                    StarryboundServer.logDebug("WorldStart", "[" + this.client.playerData.client + "][" + bool1 + ":" + clientID + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
+                                    StarshipServer.logDebug("WorldStart", "[" + this.client.playerData.client + "][" + bool1 + ":" + clientID + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
                                 }
                                 else
-                                    StarryboundServer.logDebug("WorldStart", "[" + this.client.playerData.client + "][" + bool1 + ":" + clientID + "] InPlayerShip:[" + this.client.playerData.inPlayerShip + "]");
+                                    StarshipServer.logDebug("WorldStart", "[" + this.client.playerData.client + "][" + bool1 + ":" + clientID + "] InPlayerShip:[" + this.client.playerData.inPlayerShip + "]");
                             }
                             else if (packetID == Packet.WorldStop)
                             {
@@ -427,7 +427,7 @@ namespace com.avilance.Starrybound
                                     if (coords != null)
                                     {
                                         this.client.playerData.loc = coords;
-                                        StarryboundServer.logDebug("EnvUpdate", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "]");
+                                        StarshipServer.logDebug("EnvUpdate", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "]");
                                     }
                                 }
                             }
@@ -466,8 +466,8 @@ namespace com.avilance.Starrybound
                                                                     log.TryGetValue("loc", out this.client.playerData.loc);
                                                                     if (!log.TryGetValue("home", out this.client.playerData.home))
                                                                         this.client.playerData.home = this.client.playerData.loc;
-                                                                    StarryboundServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
-                                                                    StarryboundServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurHome:[" + this.client.playerData.home.ToString() + "]");
+                                                                    StarshipServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
+                                                                    StarshipServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurHome:[" + this.client.playerData.home.ToString() + "]");
                                                                 }
                                                             }
                                                         }
@@ -478,8 +478,8 @@ namespace com.avilance.Starrybound
                                                         log.TryGetValue("loc", out this.client.playerData.loc);
                                                         if (!log.TryGetValue("home", out this.client.playerData.home))
                                                             this.client.playerData.home = this.client.playerData.loc;
-                                                        StarryboundServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
-                                                        StarryboundServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurHome:[" + this.client.playerData.home.ToString() + "]");
+                                                        StarshipServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurLoc:[" + this.client.playerData.loc.ToString() + "][" + this.client.playerData.inPlayerShip + "]");
+                                                        StarshipServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] CurHome:[" + this.client.playerData.home.ToString() + "]");
                                                     }
                                                 }
                                             }
@@ -488,7 +488,7 @@ namespace com.avilance.Starrybound
                                 }
                                 catch (Exception e)
                                 {
-                                    StarryboundServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] Failed to parse ClientContextUpdate from Server: " + e.ToString());
+                                    StarshipServer.logDebug("ClientContext", "[" + this.client.playerData.client + "] Failed to parse ClientContextUpdate from Server: " + e.ToString());
                                 }
                             }
                             else if (packetID == Packet.EntityCreate)
