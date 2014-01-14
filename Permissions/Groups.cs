@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace com.avilance.Starship.Permissions
+namespace com.goodstuff.Starship.Permissions
 {
     public class Group
     {

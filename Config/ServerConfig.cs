@@ -15,11 +15,11 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 using System.Threading;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class ServerConfig
     {
@@ -175,8 +175,8 @@ namespace com.avilance.Starship
         [DataMember]
         public int tileDamageLimit = 49;
 
-        [DataMember(Name = "title.connectionString")]
-        public string titleConnectionString = "playsb.avilance.com";
+///        [DataMember(Name = "title.connectionString")]
+///        public string titleConnectionString = "playsb.avilance.com";
 
         [DataMember]
         public bool upnpPortForwarding = true;

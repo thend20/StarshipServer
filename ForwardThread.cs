@@ -13,13 +13,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 using Ionic.Zlib;
-using com.avilance.Starship.Packets;
+using com.goodstuff.Starship.Packets;
 using System.Threading;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class ForwardThread
     {

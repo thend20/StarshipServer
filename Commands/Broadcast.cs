@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace com.avilance.Starship.Commands
+namespace com.goodstuff.Starship.Commands
 {
     class Broadcast : CommandBase
     {

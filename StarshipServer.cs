@@ -8,9 +8,9 @@
 */
 
 
-using com.avilance.Starship.Packets;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Packets;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,11 +20,11 @@ using System.Text;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starship.Permissions;
+using com.goodstuff.Starship.Permissions;
 using MaxMind;
 using System.Net;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class StarshipServer
     {
@@ -149,11 +149,6 @@ namespace com.avilance.Starship
             writeLog("", LogType.FileOnly);
             writeLog("-- Log Start: " + DateTime.Now + " --", LogType.FileOnly);
 
-            logInfo("##############################################");
-            logInfo("####   Avilance Ltd. Starship Server   ####");
-            logInfo("####   Copyright (c) Avilance Ltd. 2013   ####");
-            logInfo("####       Licensed under the GPLv3       ####");
-            logInfo("##############################################");
             logInfo("Version: " + VersionNum + " (" + ProtocolVersion + ")");
             logInfo("Loading Starship Server...");
 
@@ -565,7 +560,7 @@ namespace com.avilance.Starship
                                   "\"clientCount\":\"" + clientCount + "\"}";
                     byte[] buffer = Encoding.UTF8.GetBytes(json);
 
-                    WebRequest request = WebRequest.Create("http://callback.avilance.com/");
+                    /// WebRequest request = WebRequest.Create("http://callback.avilance.com/");
                     request.ContentType = "application/x-www-form-urlencoded";
                     request.Method = "POST";
                     request.ContentLength = buffer.Length;

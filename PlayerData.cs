@@ -7,16 +7,16 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starship.Permissions;
+using com.goodstuff.Starship.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Extensions;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     public class PlayerData
     {

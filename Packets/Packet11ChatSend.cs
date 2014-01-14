@@ -7,16 +7,16 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using com.avilance.Starship.Commands;
+using com.goodstuff.Starship.Commands;
 
-namespace com.avilance.Starship.Packets
+namespace com.goodstuff.Starship.Packets
 {
     class Packet11ChatSend : PacketBase
     {

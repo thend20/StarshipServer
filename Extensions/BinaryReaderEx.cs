@@ -13,9 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using com.avilance.Starship.Util;
+using com.goodstuff.Starship.Util;
 
-namespace com.avilance.Starship.Extensions
+namespace com.goodstuff.Starship.Extensions
 {
     public static class BinaryReaderEx
     {

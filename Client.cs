@@ -16,12 +16,12 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
-using com.avilance.Starship.Packets;
-using com.avilance.Starship.Permissions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
+using com.goodstuff.Starship.Packets;
+using com.goodstuff.Starship.Permissions;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable")]
     class Client

@@ -12,11 +12,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using com.avilance.Starship.Extensions;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Permissions;
+using com.goodstuff.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Permissions;
 
-namespace com.avilance.Starship.Commands
+namespace com.goodstuff.Starship.Commands
 {
     class Fuel : CommandBase
     {

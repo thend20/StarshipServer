@@ -13,7 +13,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 
-namespace com.avilance.Starship.Extensions
+namespace com.goodstuff.Starship.Extensions
 {
     public class WorldCoordinate
     {

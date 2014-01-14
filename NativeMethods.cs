@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     internal static class NativeMethods
     {

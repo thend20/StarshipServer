@@ -12,10 +12,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 
-namespace com.avilance.Starship.Commands
+namespace com.goodstuff.Starship.Commands
 {
     class Spawn : CommandBase
     {

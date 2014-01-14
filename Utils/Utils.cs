@@ -14,9 +14,9 @@ using System.IO;
 using System.Text;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Extensions;
 
-namespace com.avilance.Starship.Util
+namespace com.goodstuff.Starship.Util
 {
     public class Utils
     {

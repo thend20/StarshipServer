@@ -15,10 +15,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using com.avilance.Starship.Util;
+using com.goodstuff.Starship.Util;
 using System.IO;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class ListenerThread
     {

@@ -15,10 +15,10 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using com.avilance.Starship.Util;
+using com.goodstuff.Starship.Util;
 using System.Threading;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class BootstrapConfig
     {

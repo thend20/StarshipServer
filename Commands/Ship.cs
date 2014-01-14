@@ -7,16 +7,16 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starship.Packets;
+using com.goodstuff.Starship.Packets;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using com.avilance.Starship.Util;
-using com.avilance.Starship.Extensions;
+using com.goodstuff.Starship.Util;
+using com.goodstuff.Starship.Extensions;
 
-namespace com.avilance.Starship.Commands
+namespace com.goodstuff.Starship.Commands
 {
     class Ship : CommandBase
     {

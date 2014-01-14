@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace com.avilance.Starship.Commands
+namespace com.goodstuff.Starship.Commands
 {
     class VersionC : CommandBase
     {
@@ -29,7 +29,6 @@ namespace com.avilance.Starship.Commands
         {
             this.client.sendCommandMessage("This server is running Starship Server version " + StarshipServer.VersionNum.ToString() + ".");
             this.client.sendCommandMessage("Running Starbound Server version " + StarshipServer.starboundVersion.Name + " (" + StarshipServer.ProtocolVersion + ").");
-            this.client.sendCommandMessage("Copyright 2013, Avilance Ltd. Licensed under the GNU GPL v3.");
             return true;
         }
     }

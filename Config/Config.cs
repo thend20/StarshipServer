@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
-using com.avilance.Starship.Util;
+using com.goodstuff.Starship.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.ComponentModel;
 
-namespace com.avilance.Starship
+namespace com.goodstuff.Starship
 {
     class Config {
         internal static string RulesPath { get { return Path.Combine(StarshipServer.SavePath, "rules.txt"); } }

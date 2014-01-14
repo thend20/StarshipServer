@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace com.avilance.Starship.Util
+namespace com.goodstuff.Starship.Util
 {
     public enum Packet
     {
