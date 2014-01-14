@@ -1,6 +1,5 @@
 ﻿/* 
  * Starship Server
- * Copyright 2013, Avilance Ltd
  * Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
  * 
  * This file is a part of Starship Server.
