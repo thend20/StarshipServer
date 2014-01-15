@@ -9,5 +9,3 @@ Credit where credit is due...
  * StarryboundServer Created by Zidonuke (zidonuke@gmail.com) and Crashdoom (crashdoom@avilance.com)
 
 Licensed under the GPL v3 http://www.gnu.org/licenses/gpl.html
-
-***Testing commit - sleepless1
