@@ -17,6 +17,7 @@ using com.goodstuff.Starship.Util;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Item : CommandBase
     {
         public Item(Client client)

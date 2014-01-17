@@ -18,6 +18,7 @@ using System.IO;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Auth : CommandBase
     {
         public Auth(Client client)

@@ -14,6 +14,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Broadcast : CommandBase
     {
         public Broadcast(Client client)

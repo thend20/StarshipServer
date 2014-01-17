@@ -20,6 +20,103 @@ namespace com.goodstuff.Starship.Packets
 {
     class Packet11ChatSend : PacketBase
     {
+        /// <summary>
+        /// An array of strings that represent command keywords to be directly passed to the underlying Starbound server.
+        /// </summary>
+        private static readonly string[] passThrough = { "pvp", "w"};
+
+        /// <summary>
+        /// A dictionary of keyword => permission pairs that represent Starbound server commands that we are applying an
+        /// additional permission check to.
+        /// </summary>
+        private static readonly Dictionary<string, string> customPerms = new Dictionary<string,string>() 
+            {
+                  { "nick", "cmd.nick" }
+            }; 
+
+        /// <summary>
+        /// A dictionary of keyword => class constructor pairs that allow commands to be instantiated and executed from
+        /// chat-based keywords.
+        /// </summary>
+        private static readonly Dictionary<string, Func<Client, CommandBase>> commandConstructors = new Dictionary<string, Func<Client, CommandBase>>();
+
+        static Packet11ChatSend()
+        {
+            try
+            {
+                var dummy = new Client(null); // As commands are constructed per client, we need a dummy to retrieve it's keyword (without major rewrites)
+                StarshipServer.logInfo("Loading command keywords...");
+                foreach (Type type in (from type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+                                       from attribute in type.GetCustomAttributes(true)
+                                       where attribute is ChatCommandAttribute && typeof(CommandBase).IsAssignableFrom(type)
+                                       select type))
+                {
+                    StarshipServer.logDebug("Command Load", String.Format("Processing {0}...", type.Name));
+                    var constructor = type.GetConstructor(new Type[] { typeof(Client) });
+                    if (constructor == null)
+                    {
+                        StarshipServer.logError(String.Format("No valid constructor found for command type {0}", type.FullName));
+                        continue;
+                    }
+                    try
+                    {
+                        CommandBase temp = (CommandBase)constructor.Invoke(new object[] { dummy });
+                        List<string> keywords = new List<string>();
+
+                        keywords.Add(temp.name.ToLower());
+                        if (!Char.IsLetterOrDigit(keywords[0][0]))
+                        {
+                            StarshipServer.logError(String.Format("{0} declares invalid keyword: {1}.  Command discarded.", type.FullName, keywords[0]));
+                            continue;
+                        }
+
+                        if (temp.aliases == null)
+                        {
+                            StarshipServer.logDebug("Command Load", String.Format("Keyword found: {0}", temp.name.ToLower()));
+                        }
+                        else
+                        {
+                            StringBuilder sb = new StringBuilder(temp.name.ToLower());
+                            foreach (string alias in temp.aliases)
+                            {
+                                if (!Char.IsLetterOrDigit(alias[0]))
+                                {
+                                    // If the alias doesn't begin with a letter or number, it will not be used as a keyword.
+                                    StarshipServer.logWarn("Invalid command keyword: " + alias);
+                                    continue;
+                                }
+                                sb.AppendFormat(", {0}", alias.ToLower());
+                                keywords.Add(alias.ToLower());
+                            }
+                            StarshipServer.logDebug("Command Load", String.Format("Keywords found: {0}", sb));
+                        }
+                        Func<Client, CommandBase> func = (Client client) => { return (CommandBase)constructor.Invoke(new object[] { client }); };
+                        foreach (string keyword in keywords)
+                        {
+                            if (commandConstructors.ContainsKey(keyword))
+                                StarshipServer.logWarn(String.Format("{0} keyword overwritten by {1}!", keyword, type.FullName));
+
+                            commandConstructors[keyword] = func;
+                        }
+                        StarshipServer.logDebug("Command Load", "Registering command with Help documentation");
+                        Help.Commands.Add(temp);
+                        StarshipServer.logDebug("Command Load", String.Format("{0} loaded.", type.FullName));
+                    }
+                    catch (Exception ex)
+                    {
+                        StarshipServer.logException(String.Format("Unhandled {0} exception while processing {1} command: {2}", ex.ToString(), type.Name, ex.Message));
+                    }
+                }
+                StarshipServer.logInfo("Done loading command keywords.");
+            }
+            catch (Exception ex)
+            {
+                StarshipServer.logException(String.Format("{0} exception while loading command list: {1}{2}{3}", ex.ToString(), ex.Message, Environment.NewLine, ex.StackTrace));
+                System.Threading.Thread.Sleep(5000);
+                System.Environment.Exit(7); // Not sure of established exit codes
+            }
+        }
+
         Dictionary<string, object> tmpArray = new Dictionary<string, object>();
 
         public Packet11ChatSend(Client clientThread, BinaryReader stream, Direction direction)
@@ -63,8 +160,36 @@ namespace com.goodstuff.Starship.Packets
                     string[] args = message.Remove(0, 1).Split(' ');
                     string cmd = args[0].ToLower();
 
+                    if (Packet11ChatSend.passThrough.Contains(cmd))
+                        // Command passes directly to server
+                        return true;
+
+                    if (Packet11ChatSend.customPerms.ContainsKey(cmd))
+                    {
+                        // Command is subject to custom permission check before passing to server
+                        if (this.client.playerData.hasPermission(Packet11ChatSend.customPerms[cmd]))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            this.client.sendChatMessage(ChatReceiveContext.Whisper, "", "You do not have permission to use this command.");
+                            return false;
+                        }
+                    }
+
+                    // Execute custom command
                     args = parseArgs(message.Remove(0, cmd.Length + 1));
 
+                    if (commandConstructors.ContainsKey(cmd))
+                    {
+                        StarshipServer.logDebug("Command Processing", String.Format("{0} keyword found.", cmd));
+                        return commandConstructors[cmd](this.client).doProcess(args);
+                    }
+                    else
+                        this.client.sendCommandMessage("Command " + cmd + " not found.");
+
+                    return false;
                     switch (cmd)
                     {
                         case "ban":

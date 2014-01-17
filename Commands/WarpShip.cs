@@ -17,6 +17,7 @@ using com.goodstuff.Starship.Extensions;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class WarpShip : CommandBase
     {
         public WarpShip(Client client)

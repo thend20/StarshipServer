@@ -16,6 +16,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class List : CommandBase
     {
         List<Client> staffList = new List<Client>();

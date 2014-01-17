@@ -16,6 +16,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class BanC : CommandBase
     {
         public BanC(Client client)

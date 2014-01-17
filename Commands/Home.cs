@@ -18,6 +18,7 @@ using com.goodstuff.Starship.Extensions;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Home : CommandBase
     {
         public Home(Client client)

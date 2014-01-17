@@ -15,6 +15,7 @@ using com.goodstuff.Starship.Permissions;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class GroupC : CommandBase
     {
         public GroupC(Client client)

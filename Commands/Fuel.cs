@@ -18,6 +18,7 @@ using com.goodstuff.Starship.Permissions;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Fuel : CommandBase
     {
         public Fuel(Client client)

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Reload : CommandBase
     {
         public Reload(Client client) {

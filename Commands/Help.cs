@@ -14,9 +14,11 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Help : CommandBase
     {
-        CommandBase[] commands;
+        public static readonly List<CommandBase> Commands = new List<CommandBase>();
+        //CommandBase[] commands;
                                      
         public Help(Client client)
         {
@@ -26,6 +28,7 @@ namespace com.goodstuff.Starship.Commands
 
             this.client = client;
             this.player = client.playerData;
+            /*
             commands =  new CommandBase[] {
                 new BanC(client),
                 new Reload(client),
@@ -52,6 +55,7 @@ namespace com.goodstuff.Starship.Commands
                 new WarpShip(client),
                 new WhosThere(client),
             };
+             */
         }
 
         public override bool doProcess(string[] args)
@@ -59,7 +63,7 @@ namespace com.goodstuff.Starship.Commands
             if (args.Length == 1)
             {
                 string commandToFind = args[0];
-                foreach (CommandBase command in commands)
+                foreach (CommandBase command in Help.Commands)
                 {
                     if (command.name.ToLower().Equals(commandToFind.ToLower()))
                     {
@@ -86,23 +90,23 @@ namespace com.goodstuff.Starship.Commands
                                 }
                                 this.client.sendCommandMessage(aliasesMessage);
                             }
-                            return true;
+                            return false;
                         }
                         else
                         {
                             this.client.sendChatMessage(Util.ChatReceiveContext.CommandResult, "", "You do not have permission to view this command.");
-                            return true;
+                            return false;
                         }
                     }
                 }
                 this.client.sendChatMessage("Command "+commandToFind+" not found.");
-                return true;
+                return false;
             }
             else
             {
                 this.client.sendChatMessage("^#5dc4f4;Command list:");
                 StringBuilder sb = new StringBuilder();
-                foreach (CommandBase command in commands)
+                foreach (CommandBase command in Help.Commands)
                 {
                     bool hasPermission = true;
                     if (command.Permission != null)
@@ -131,7 +135,7 @@ namespace com.goodstuff.Starship.Commands
                 }
                 this.client.sendChatMessage("^#5dc4f4;" + sb.Remove(sb.Length - 2, 2).ToString());
                 this.client.sendChatMessage("^#5dc4f4;Use /help <command> for help with a specific command.");
-                return true;
+                return false;
             }
         }
     }

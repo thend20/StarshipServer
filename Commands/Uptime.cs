@@ -16,6 +16,7 @@ using com.goodstuff.Starship.Util;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Uptime : CommandBase
     {
         public Uptime(Client client)

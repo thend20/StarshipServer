@@ -16,6 +16,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Shutdown : CommandBase
     {
         public Shutdown(Client client)

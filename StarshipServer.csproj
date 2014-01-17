@@ -105,6 +105,7 @@
     <Compile Include="Commands\AdminChat.cs" />
     <Compile Include="Commands\Broadcast.cs" />
     <Compile Include="Commands\Build.cs" />
+    <Compile Include="Commands\ChatCommandAttribute.cs" />
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Commands\BanC.cs" />
     <Compile Include="Commands\GroupC.cs" />

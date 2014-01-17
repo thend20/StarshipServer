@@ -14,6 +14,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class ShipAccess : CommandBase
     {
         public ShipAccess(Client client)

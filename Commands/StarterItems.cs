@@ -7,6 +7,7 @@ using com.goodstuff.Starship.Permissions;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class StarterItems : CommandBase
     {
         public StarterItems(Client client)

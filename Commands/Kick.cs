@@ -15,6 +15,7 @@ using System.Text;
 
 namespace com.goodstuff.Starship.Commands
 {
+    [ChatCommand]
     class Kick : CommandBase
     {
         public Kick(Client client)
