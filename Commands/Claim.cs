@@ -15,7 +15,7 @@ using System.Text;
 namespace com.goodstuff.Starship.Commands
 {
     [ChatCommand]
-    public class Claim : CommandBase
+    internal class Claim : CommandBase
     {
         /*
             Claim planet for build/destroy protection
@@ -32,9 +32,9 @@ namespace com.goodstuff.Starship.Commands
         public Claim(Client client)
         {
             this.name = "claim";
-            this.HelpText = "Claim current planet\n" +
-                "\toff - remove claim\n" +
-                "\tallow [user] - Whitelist user, allow them to build on this planet\n" +
+            this.HelpText = "Claim current planet" + Environment.NewLine +
+                "\toff - remove claim" + Environment.NewLine +
+                "\tallow [user] - Whitelist user, allow them to build on this planet" + Environment.NewLine +
                 "\tdeny [user] - remove user from whitelist";
 
             this.client = client;
