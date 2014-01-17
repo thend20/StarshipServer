@@ -49,6 +49,7 @@ namespace com.goodstuff.Starship.Packets
                 foreach (Type type in (from type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
                                        from attribute in type.GetCustomAttributes(true)
                                        where attribute is ChatCommandAttribute && typeof(CommandBase).IsAssignableFrom(type)
+                                       orderby type.Name
                                        select type))
                 {
                     StarshipServer.logDebug("Command Load", String.Format("Processing {0}...", type.Name));
@@ -79,7 +80,7 @@ namespace com.goodstuff.Starship.Packets
                             StringBuilder sb = new StringBuilder(temp.name.ToLower());
                             foreach (string alias in temp.aliases)
                             {
-                                if (!Char.IsLetterOrDigit(alias[0]))
+                                if (!Char.IsLetterOrDigit(alias[0]) && alias[0] != '?')
                                 {
                                     // If the alias doesn't begin with a letter or number, it will not be used as a keyword.
                                     StarshipServer.logWarn("Invalid command keyword: " + alias);
