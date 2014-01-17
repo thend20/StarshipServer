@@ -18,7 +18,6 @@ namespace com.goodstuff.Starship.Commands
     class Help : CommandBase
     {
         public static readonly List<CommandBase> Commands = new List<CommandBase>();
-        //CommandBase[] commands;
                                      
         public Help(Client client)
         {
@@ -28,34 +27,6 @@ namespace com.goodstuff.Starship.Commands
 
             this.client = client;
             this.player = client.playerData;
-            /*
-            commands =  new CommandBase[] {
-                new BanC(client),
-                new Reload(client),
-                new Broadcast(client), 
-                new Build(client), 
-                new Find(client),
-                new GroupC(client),
-                new UnbanCommand(client),
-                new Home(client), 
-                new Item(client),
-                new Kick(client), 
-                new List(client), 
-                new Me(client), 
-                new Mute(client), 
-                new Planet(client), 
-                new Rules(client),
-                new Ship(client), 
-                new ShipAccess(client),
-                new Shutdown(client), 
-                new Spawn(client),
-                new StarterItems(client),
-                new Uptime(client),
-                new VersionC(client),
-                new WarpShip(client),
-                new WhosThere(client),
-            };
-             */
         }
 
         public override bool doProcess(string[] args)
