@@ -7,6 +7,7 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
+using com.goodstuff.Starship.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,47 @@ namespace com.goodstuff.Starship.Commands
         }
         public override bool doProcess(string[] args)
         {
-            throw new NotImplementedException();
+            SystemCoordinate currentPlanet = this.player.loc._syscoord; // Identify current planet?
+            if (args.Length == 0)
+            {
+                //TODO: Claim current planet
+                StarshipServer.logDebug("Claim debugging", "Claiming the planet: " + currentPlanet.ToString());
+            }
+            else
+            {
+                string user = null;
+                if (args.Length >= 2)
+                    user = args[1];
+
+                switch (args[0].ToLower())
+                {
+                    case "off":
+                        break;
+
+                    case "allow":
+                        if (user == null)
+                            this.client.sendCommandMessage("Insufficient parameters.");
+                        else
+                        {
+                            //TODO: Allow this user to build on the current system
+                        }
+                        break;
+
+                    case "deny":
+                        if (user == null)
+                            this.client.sendCommandMessage("Insufficient parameters.");
+                        else
+                        {
+                            //TODO: remove this users permission to build on the current system
+                        }
+                        break;
+
+                    default:
+                        this.client.sendCommandMessage("Invalid claim operation: " + args[0]);
+                        break;
+                }
+            }
+            return false;
         }
     }
 }
