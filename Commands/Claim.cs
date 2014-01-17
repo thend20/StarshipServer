@@ -33,10 +33,7 @@ namespace com.goodstuff.Starship.Commands
         public Claim(Client client)
         {
             this.name = "claim";
-            this.HelpText = "Claim current planet" + Environment.NewLine +
-                "\toff - remove claim" + Environment.NewLine +
-                "\tallow [user] - Whitelist user, allow them to build on this planet" + Environment.NewLine +
-                "\tdeny [user] - remove user from whitelist";
+            this.HelpText = " <off>|<allow|deny [user]>: Claims current planet without parameters or allows other users to build on owned planet.";
 
             this.client = client;
             this.player = client.playerData;
@@ -46,7 +43,7 @@ namespace com.goodstuff.Starship.Commands
             SystemCoordinate currentPlanet = this.player.loc._syscoord; // Identify current planet?
             if (args.Length == 0)
             {
-                //TODO: Claim current planet
+                //TODO: Check if player already owns a planet and claim current planet
                 StarshipServer.logDebug("Claim debugging", "Claiming the planet: " + currentPlanet.ToString());
             }
             else
@@ -58,6 +55,7 @@ namespace com.goodstuff.Starship.Commands
                 switch (args[0].ToLower())
                 {
                     case "off":
+                        //TODO: Check if owned and disown current planet.
                         break;
 
                     case "allow":
@@ -65,7 +63,7 @@ namespace com.goodstuff.Starship.Commands
                             this.client.sendCommandMessage("Insufficient parameters.");
                         else
                         {
-                            //TODO: Allow this user to build on the current system
+                            //TODO: Check if owned and allow given user to build on the current system
                         }
                         break;
 
@@ -74,7 +72,7 @@ namespace com.goodstuff.Starship.Commands
                             this.client.sendCommandMessage("Insufficient parameters.");
                         else
                         {
-                            //TODO: remove this users permission to build on the current system
+                            //TODO: Check if owned and remove the given users permission to build on the current system
                         }
                         break;
 
