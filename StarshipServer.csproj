@@ -1,0 +1,203 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B522F638-203F-4A9F-B2F5-B77149B85F1B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>com.goodstuff.Starship</RootNamespace>
+    <AssemblyName>starship_server</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>com.goodstuff.Starship.StarshipServer</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'NoServerDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\NoServerDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS; NOSERVER</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ZidoDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ZidoDebug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS; NOSERVER; ZIDO</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.Zlib, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\Ionic.Zlib.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix, Version=4.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.dll, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libs\System.Numerics.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bans.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="Commands\AdminChat.cs" />
+    <Compile Include="Commands\Broadcast.cs" />
+    <Compile Include="Commands\Build.cs" />
+    <Compile Include="Commands\ChatCommandAttribute.cs" />
+    <Compile Include="Commands\CommandBase.cs" />
+    <Compile Include="Commands\BanC.cs" />
+    <Compile Include="Commands\GroupC.cs" />
+    <Compile Include="Commands\Fuel.cs" />
+    <Compile Include="Commands\Reload.cs" />
+    <Compile Include="Commands\Rules.cs" />
+    <Compile Include="Commands\Find.cs" />
+    <Compile Include="Commands\Help.cs" />
+    <Compile Include="Commands\Item.cs" />
+    <Compile Include="Commands\Me.cs" />
+    <Compile Include="Commands\Planet.cs" />
+    <Compile Include="Commands\Kick.cs" />
+    <Compile Include="Commands\Mute.cs" />
+    <Compile Include="Commands\Home.cs" />
+    <Compile Include="Commands\SetHome.cs" />
+    <Compile Include="Commands\Ship.cs" />
+    <Compile Include="Commands\List.cs" />
+    <Compile Include="Commands\ShipAccess.cs" />
+    <Compile Include="Commands\Shutdown.cs" />
+    <Compile Include="Commands\Spawn.cs" />
+    <Compile Include="Commands\StarterItems.cs" />
+    <Compile Include="Commands\Auth.cs" />
+    <Compile Include="Commands\Uptime.cs" />
+    <Compile Include="Commands\VersionC.cs" />
+    <Compile Include="Commands\WarpShip.cs" />
+    <Compile Include="Commands\WhosThere.cs" />
+    <Compile Include="Config\Config.cs" />
+    <Compile Include="Extensions\BinaryReaderEx.cs" />
+    <Compile Include="Extensions\BinaryWriterEx.cs" />
+    <Compile Include="Extensions\SystemCoordinate.cs" />
+    <Compile Include="Extensions\WorldCoordinate.cs" />
+    <Compile Include="ForwardThread.cs" />
+    <Compile Include="ListenerThread.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Packets\Packet11ChatSend.cs" />
+    <Compile Include="Packets\Packet2ConnectResponse.cs" />
+    <Compile Include="Packets\Packet5ChatReceive.cs" />
+    <Compile Include="Packets\Packet7ClientConnect.cs" />
+    <Compile Include="Packets\PacketBase.cs" />
+    <Compile Include="Permissions\Groups.cs" />
+    <Compile Include="Permissions\Users.cs" />
+    <Compile Include="PlayerData.cs" />
+    <Compile Include="Config\BootstrapConfig.cs" />
+    <Compile Include="Config\ServerConfig.cs" />
+    <Compile Include="ServerThread.cs" />
+    <Compile Include="StarshipServer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Enums.cs" />
+    <Compile Include="Utils\GeoIPCountry.cs" />
+    <Compile Include="Utils\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="StarshipServer.licenseheader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\Ionic.Zlib.dll" />
+    <Content Include="Libs\Mono.Posix.dll" />
+    <Content Include="Libs\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
