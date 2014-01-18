@@ -112,7 +112,7 @@ namespace com.goodstuff.Starship.Packets
             }
             catch (Exception ex)
             {
-                StarshipServer.logException(String.Format("{0} exception while loading command list: {1}{2}{3}", ex.ToString(), ex.Message, Environment.NewLine, ex.StackTrace));
+                StarshipServer.logFatal(String.Format("{0} exception while loading command list: {1}{2}{3}", ex.ToString(), ex.Message, Environment.NewLine, ex.StackTrace));
                 System.Threading.Thread.Sleep(5000);
                 System.Environment.Exit(7); // Not sure of established exit codes
             }
