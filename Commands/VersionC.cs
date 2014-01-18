@@ -20,7 +20,7 @@ namespace com.goodstuff.Starship.Commands
         public VersionC(Client client)
         {
             this.name = "version";
-            this.HelpText = "";
+            this.HelpText = "Displays currently running versions of Starbound server and Starship server extensions.";
 
             this.client = client;
             this.player = client.playerData;
