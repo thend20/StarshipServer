@@ -24,7 +24,7 @@ namespace com.goodstuff.Starship.Commands
         public Auth(Client client)
         {
             this.name = "auth";
-            this.HelpText = "Used to authenticate as superadmin when first setting up Starship.";
+            this.HelpText = "";
 
             this.client = client;
             this.player = client.playerData;
