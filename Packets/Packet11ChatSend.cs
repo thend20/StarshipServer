@@ -99,8 +99,15 @@ namespace com.goodstuff.Starship.Packets
 
                             commandConstructors[keyword] = func;
                         }
-                        StarshipServer.logDebug("Command Load", "Registering command with Help documentation");
-                        Help.Commands.Add(temp);
+                        if (String.IsNullOrEmpty(temp.HelpText) || String.IsNullOrWhiteSpace(temp.HelpText))
+                        {
+                            StarshipServer.logWarn(temp.name + " command does not have any help text, excluding from command list and documentation.");
+                        }
+                        else
+                        {
+                            StarshipServer.logDebug("Command Load", "Registering command with Help documentation");
+                            Help.Commands.Add(temp);
+                        }
                         StarshipServer.logDebug("Command Load", String.Format("{0} loaded.", type.FullName));
                     }
                     catch (Exception ex)
