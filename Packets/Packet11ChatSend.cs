@@ -184,8 +184,7 @@ namespace com.goodstuff.Starship.Packets
 
                     if (commandConstructors.ContainsKey(cmd))
                     {
-                        StarshipServer.logDebug("Command Processing", String.Format("{0} keyword found.", cmd));
-                        return commandConstructors[cmd](this.client).doProcess(args);
+                        commandConstructors[cmd](this.client).doProcess(args);
                     }
                     else
                         this.client.sendCommandMessage("Command " + cmd + " not found.");
