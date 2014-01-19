@@ -8,6 +8,7 @@
 */
 
 using com.goodstuff.Starship.Extensions;
+using com.goodstuff.Starship.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,61 +19,133 @@ namespace com.goodstuff.Starship.Commands
     [ChatCommand]
     internal class Claim : CommandBase
     {
-        /*
-            Claim planet for build/destroy protection
-            Allow player to build
-            Disabled for guest
-            One claim per user, new claim removes previous
-
-            Commands:
-            /claim - claim current planet
-            /claim off - remove claim
-            /claim allow [user] - Whitelist user, allow them to build
-            /claim deny [user] - remove user from whitelist 
-        */
         public Claim(Client client)
         {
             this.name = "claim";
-            this.HelpText = " <off>|<allow|deny [user]>: Claims current planet without parameters or allows other users to build on owned planet.";
+            this.HelpText = " <release>|<allow|revoke [user]>: Claims current planet without parameters or allows other users to build on owned planet.";
 
             this.client = client;
             this.player = client.playerData;
         }
         public override bool doProcess(string[] args)
         {
-            SystemCoordinate currentPlanet = this.player.loc._syscoord; // Identify current planet?
+            WorldCoordinate world = this.player.loc;
+
             if (args.Length == 0)
             {
-                //TODO: Check if player already owns a planet and claim current planet
-                StarshipServer.logDebug("Claim debugging", "Claiming the planet: " + currentPlanet.ToString());
+                StarshipServer.logDebug("Claim debugging", "Claiming the planet: " + world.ToString());
+                if (this.player.claimedSystems.Contains(world))
+                {
+                    this.client.sendCommandMessage("You have already claimed this world.");
+                }
+                else if (Claims.IsClaimed(world))
+                {
+                    this.client.sendCommandMessage("This world has already been claimed.");
+                }
+                else if (this.player.claimedSystems.Count >= this.player.maxOwnedWorlds) 
+                {
+                    this.client.sendCommandMessage("You are at your limit of claimed worlds.");
+                }
+                else
+                {
+                    if (Claims.SaveClaim(world, this.player, null))
+                        this.client.sendCommandMessage("You have claimed this world.");
+                    else
+                        this.client.sendCommandMessage("There was an error processing the command, world not claimed.");
+                }
             }
             else
             {
-                string user = null;
-                if (args.Length >= 2)
-                    user = args[1];
-
                 switch (args[0].ToLower())
                 {
-                    case "off":
-                        //TODO: Check if owned and disown current planet.
+                    case "release":
+                        if (Claims.ReleaseClaim(world, this.player.uuid))
+                        {
+                            this.player.claimedSystems.Remove(world);
+                            Users.SaveUser(this.player);
+                            this.client.sendCommandMessage("Claim released.");
+                        }
+                        else
+                            this.client.sendCommandMessage("Claim not yours or does not exist.");
                         break;
 
                     case "allow":
-                        if (user == null)
+                        if (args.Length < 2)
                             this.client.sendCommandMessage("Insufficient parameters.");
                         else
                         {
-                            //TODO: Check if owned and allow given user to build on the current system
+                            for (int i = 1; i < args.Length; i++)
+                            {
+                                Client target = StarshipServer.getClient(args[i]);
+                                if (target == null)
+                                {
+                                    this.client.sendCommandMessage(args[i] + " not found.");
+                                }
+                                else
+                                {
+                                    TerritoryClaim claim;
+                                    if (Claims.TryGetClaim(world, out claim))
+                                    {
+                                        if (claim.uuid != this.player.uuid)
+                                        {
+                                            this.client.sendCommandMessage("You are not the owner of this world.");
+                                        }
+                                        else
+                                        {
+                                            this.client.sendCommandMessage("You have allowed " + args[i] + " to build on this world.");
+                                            claim.allowed.Add(target.playerData.uuid);
+                                            Claims.SaveClaim(claim);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.client.sendCommandMessage("World is unclaimed.");
+                                    }
+                                }
+                            }
                         }
                         break;
 
-                    case "deny":
-                        if (user == null)
+                    case "revoke":
+                        if (args.Length < 2)
                             this.client.sendCommandMessage("Insufficient parameters.");
                         else
                         {
-                            //TODO: Check if owned and remove the given users permission to build on the current system
+                            for (int i = 1; i < args.Length; i++)
+                            {
+                                Client target = StarshipServer.getClient(args[i]);
+                                if (target == null)
+                                {
+                                    this.client.sendCommandMessage(args[i] + " not found.");
+                                }
+                                else
+                                {
+                                    TerritoryClaim claim;
+                                    if (Claims.TryGetClaim(world, out claim))
+                                    {
+                                        if (claim.uuid != this.player.uuid)
+                                        {
+                                            this.client.sendCommandMessage("You are not the owner of this world.");
+                                        }
+                                        else
+                                        {
+                                            if (claim.allowed.Remove(target.playerData.uuid))
+                                            {
+                                                this.client.sendCommandMessage("You have revoked " + args[i] + "'s permission to build on this world.");
+                                                Claims.SaveClaim(claim);
+                                            }
+                                            else
+                                            {
+                                                this.client.sendCommandMessage(args[i] + " did not have permission to build on this world.");
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        this.client.sendCommandMessage("World is unclaimed.");
+                                    }
+                                }
+                            }
                         }
                         break;
 

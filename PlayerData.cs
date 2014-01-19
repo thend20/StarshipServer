@@ -26,6 +26,7 @@ namespace com.goodstuff.Starship
         public uint id;
         public string uuid;
         public string serverName;
+        public List<WorldCoordinate> claimedSystems = new List<WorldCoordinate>();
 
         public bool sentMotd = false;
         public bool freeFuel = false;
@@ -44,6 +45,7 @@ namespace com.goodstuff.Starship
 
         public bool isMuted = false;
         public bool canBuild = true;
+        public int maxOwnedWorlds = 1;
 
         public bool privateShip = false;
         public List<string> shipWhitelist = new List<string>();
@@ -103,6 +105,7 @@ namespace com.goodstuff.Starship
                     return false;
             }
             else if (!hasPermission("world.build")) return false;
+            else if (loc != null && !Claims.CanUserBuild(uuid, loc)) return false;
             else if (!canBuild) return false;
             return true;
         }

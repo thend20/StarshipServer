@@ -156,6 +156,7 @@ namespace com.goodstuff.Starship
             ServerConfig.SetupConfig();
             Groups.SetupGroups();
             Users.SetupUsers();
+            Claims.SetupClaims();
 #if !DEBUG
             if (config.logLevel == LogType.Debug)
             {

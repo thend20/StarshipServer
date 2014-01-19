@@ -146,6 +146,7 @@
     <Compile Include="Packets\Packet5ChatReceive.cs" />
     <Compile Include="Packets\Packet7ClientConnect.cs" />
     <Compile Include="Packets\PacketBase.cs" />
+    <Compile Include="Permissions\Claims.cs" />
     <Compile Include="Permissions\Groups.cs" />
     <Compile Include="Permissions\Users.cs" />
     <Compile Include="PlayerData.cs" />
