@@ -128,6 +128,8 @@ namespace com.goodstuff.Starship.Packets
                 pData.privateShip = userPData.privateShip;
                 pData.shipBlacklist = userPData.shipBlacklist;
                 pData.shipWhitelist = userPData.shipWhitelist;
+                pData.claimedSystems = userPData.claimedSystems;
+                pData.maxOwnedWorlds = userPData.maxOwnedWorlds;
 
                 if (userPData.uuid != pData.uuid && userPData.groupName != StarshipServer.defaultGroup)
                 {

@@ -7,6 +7,7 @@
  * You should have received a copy of the GNU General Public License along with Starship Server. If not, see http://www.gnu.org/licenses/.
 */
 
+using com.goodstuff.Starship.Extensions;
 using com.goodstuff.Starship.Util;
 using Newtonsoft.Json;
 using System;
@@ -32,19 +33,19 @@ namespace com.goodstuff.Starship.Permissions
         public bool privateShip = false;
         public List<string> shipWhitelist = new List<string>();
         public List<string> shipBlacklist = new List<string>();
-        public List<string> claimedSystems = new List<string>();
+        public List<WorldCoordinate> claimedSystems = new List<WorldCoordinate>();
 
         public int lastOnline = 0;
         public int maxOwnedWorlds = 1;
 
-        public User(string name, string uuid, string lastIp, string groupName, bool isMuted, bool canBuild, int lastOnline, int maxOwnedWorlds, bool freeFuel, bool starterItems, bool privateShip, List<string> shipWhitelist, List<string> shipBlacklist, List<string> claimedSystems)
+        public User(string name, string uuid, string lastIp, string groupName, bool isMuted, bool canBuild, int lastOnline, int maxOwnedWorlds, bool freeFuel, bool starterItems, bool privateShip, List<string> shipWhitelist, List<string> shipBlacklist, List<WorldCoordinate> claimedSystems)
         {
             if (shipWhitelist == null)
                 shipWhitelist = new List<string>();
             if (shipBlacklist == null)
                 shipBlacklist = new List<string>();
             if (claimedSystems == null)
-                claimedSystems = new List<string>();
+                claimedSystems = new List<WorldCoordinate>();
             this.name = name;
             this.uuid = uuid;
             this.lastIp = lastIp;
@@ -129,7 +130,7 @@ namespace com.goodstuff.Starship.Permissions
                 {
                     StarshipServer.logError("Player data for user " + name.ToLower() + " with UUID " + uuid + " is corrupt. Re-generating user file");
 
-                    User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, Claims.DEFAULT_MAX_OWNED_WORLDS, true, true, false, new List<string>(), new List<string>(), new List<string>());
+                    User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, Claims.DEFAULT_MAX_OWNED_WORLDS, true, true, false, new List<string>(), new List<string>(), new List<WorldCoordinate>());
                     Write(Path.Combine(UsersPath, name.ToLower() + ".json"), user);
 
                     return user;
@@ -137,7 +138,7 @@ namespace com.goodstuff.Starship.Permissions
             }
             else
             {
-                User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, Claims.DEFAULT_MAX_OWNED_WORLDS, false, false, false, new List<string>(), new List<string>(), new List<string>());
+                User user = new User(name, uuid, ip, StarshipServer.defaultGroup, false, true, 0, Claims.DEFAULT_MAX_OWNED_WORLDS, false, false, false, new List<string>(), new List<string>(), new List<WorldCoordinate>());
                 Write(Path.Combine(UsersPath, name.ToLower() + ".json"), user);
 
                 return user;
@@ -148,8 +149,7 @@ namespace com.goodstuff.Starship.Permissions
         {
             try
             {
-                var claims = new List<string>(from system in player.claimedSystems let systemName = system.ToString() select systemName);
-                User user = new User(player.name, player.uuid, player.ip, player.group.name, player.isMuted, player.canBuild, Utils.getTimestamp(), player.maxOwnedWorlds, player.freeFuel, player.receivedStarterKit, player.privateShip, player.shipWhitelist, player.shipBlacklist, claims);
+                User user = new User(player.name, player.uuid, player.ip, player.group.name, player.isMuted, player.canBuild, Utils.getTimestamp(), player.maxOwnedWorlds, player.freeFuel, player.receivedStarterKit, player.privateShip, player.shipWhitelist, player.shipBlacklist, player.claimedSystems);
                 Write(Path.Combine(UsersPath, player.name.ToLower() + ".json"), user);
             }
             catch (Exception e)
@@ -181,7 +181,7 @@ namespace com.goodstuff.Starship.Permissions
             catch (Exception)
             {
                 StarshipServer.logException("Persistant user storage for " + data[0] + " is corrupt - Creating with default values");
-                return new User(data[0], data[1], data[2], StarshipServer.defaultGroup, false, true, Utils.getTimestamp(), Claims.DEFAULT_MAX_OWNED_WORLDS, false, false, false, new List<string>(), new List<string>(), new List<string>());
+                return new User(data[0], data[1], data[2], StarshipServer.defaultGroup, false, true, Utils.getTimestamp(), Claims.DEFAULT_MAX_OWNED_WORLDS, false, false, false, new List<string>(), new List<string>(), new List<WorldCoordinate>());
             }
         }
 
