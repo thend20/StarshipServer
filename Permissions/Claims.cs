@@ -16,13 +16,15 @@ namespace com.goodstuff.Starship.Permissions
     {
         public WorldCoordinate world;
         public string uuid;
+        public string ownerName;
         public List<string> allowed;
 
-        public TerritoryClaim(WorldCoordinate world, string uuid, List<string> allowed)
+        public TerritoryClaim(WorldCoordinate world, string uuid, string ownerName, List<string> allowed)
         {
             this.world = world;
             this.uuid = uuid;
             this.allowed = allowed;
+            this.ownerName = ownerName;
         }
     }
 
@@ -44,6 +46,9 @@ namespace com.goodstuff.Starship.Permissions
                 Directory.CreateDirectory(ClaimsPath);
         }
 
+        /// <summary>
+        /// Returns a boolean value indicating whether the given world is claims
+        /// </summary>
         public static bool IsClaimed(WorldCoordinate world)
         {
             return File.Exists(Claims.PathToClaim(world));
@@ -58,6 +63,13 @@ namespace com.goodstuff.Starship.Permissions
                 return true;
         }
 
+        /// <summary>
+        /// Returns false if the given world is not claimed, or true with the territory data
+        /// assigned to the claim output variable.
+        /// </summary>
+        /// <param name="world">The world claim to retrive</param>
+        /// <param name="claim">The variable to store the TerritoryClaim</param>
+        /// <returns>Boolean indicating if a claim was found</returns>
         public static bool TryGetClaim(WorldCoordinate world, out TerritoryClaim claim)
         {
             lock (cacheLock)
@@ -96,7 +108,7 @@ namespace com.goodstuff.Starship.Permissions
         {
             if (allowed == null)
                 allowed = new List<string>();
-            var claim = new TerritoryClaim(world, player.uuid, allowed);
+            var claim = new TerritoryClaim(world, player.uuid, player.name, allowed);
             if (Claims.SaveClaim(claim))
             {
                 player.claimedSystems.Add(world);

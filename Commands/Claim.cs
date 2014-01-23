@@ -22,18 +22,16 @@ namespace com.goodstuff.Starship.Commands
         public Claim(Client client)
         {
             this.name = "claim";
-            this.HelpText = " <release>|<allow|revoke [user]>: Claims current planet without parameters or allows other users to build on owned planet.";
+            this.HelpText = " <release [#]>|<list>|<who>|<allow|revoke [user]>: Claims current planet without parameters, gives a list of currently owned worlds, displays the owner of the current world, or allows other users to build on the owned planet.";
 
             this.client = client;
             this.player = client.playerData;
         }
         public override bool doProcess(string[] args)
         {
-            WorldCoordinate world = this.player.loc;
-
             if (args.Length == 0)
             {
-                StarshipServer.logDebug("Claim debugging", "Claiming the planet: " + world.ToString());
+                WorldCoordinate world = this.player.loc;
                 if (this.player.claimedSystems.Contains(world))
                 {
                     this.client.sendCommandMessage("You have already claimed this world.");
@@ -59,14 +57,52 @@ namespace com.goodstuff.Starship.Commands
                 switch (args[0].ToLower())
                 {
                     case "release":
-                        if (Claims.ReleaseClaim(world, this.player.uuid))
+                        if (this.client.playerData.claimedSystems.Count == 0)
                         {
-                            this.player.claimedSystems.Remove(world);
-                            Users.SaveUser(this.player);
-                            this.client.sendCommandMessage("Claim released.");
+                            this.client.sendCommandMessage("No claimed systems to release.");
+                            break; // No need to save
+                        }
+                        else if (args.Length >= 2)
+                        {
+                            try
+                            {
+                                int index = Convert.ToInt32(args[1]) - 1;
+                                if(index < 0 || index >= this.player.claimedSystems.Count)
+                                    throw new OverflowException();
+                                if (Claims.ReleaseClaim(this.player.claimedSystems[index], this.player.uuid))
+                                {
+                                    this.client.sendCommandMessage("Released claim on world: " + this.player.claimedSystems[index].ToString());
+                                    this.player.claimedSystems.RemoveAt(index);
+                                }
+                                else
+                                {
+                                    this.client.sendCommandMessage("Claim not yours or does not exist");
+                                    StarshipServer.logError(String.Format("Attempted to release invalid claim on world {0} by player {1}, uuid: {2}", this.player.claimedSystems[index].ToString(), player.name, player.uuid));
+                                }
+                            }
+                            catch (FormatException)
+                            {
+                                this.client.sendCommandMessage("Invalid world designator: " + args[1]);
+                            }
+                            catch (OverflowException)
+                            {
+                                this.client.sendCommandMessage("Index out of range.");
+                            }
                         }
                         else
-                            this.client.sendCommandMessage("Claim not yours or does not exist.");
+                        {
+                            foreach(var world in this.player.claimedSystems) {
+                                if (Claims.ReleaseClaim(world, this.player.uuid))
+                                    this.client.sendCommandMessage("Released claim on world: " + world.ToString());
+                                else
+                                {
+                                    this.client.sendCommandMessage("Claim not yours or does not exist");
+                                    StarshipServer.logError(String.Format("Attempted to release invalid claim on world {0} by player {1}, uuid: {2}", world.ToString(), player.name, player.uuid));
+                                }
+                            }
+                            this.player.claimedSystems.Clear();
+                        }
+                        Users.SaveUser(this.player);
                         break;
 
                     case "allow":
@@ -84,7 +120,7 @@ namespace com.goodstuff.Starship.Commands
                                 else
                                 {
                                     TerritoryClaim claim;
-                                    if (Claims.TryGetClaim(world, out claim))
+                                    if (Claims.TryGetClaim(this.player.loc, out claim))
                                     {
                                         if (claim.uuid != this.player.uuid)
                                         {
@@ -108,44 +144,72 @@ namespace com.goodstuff.Starship.Commands
 
                     case "revoke":
                         if (args.Length < 2)
-                            this.client.sendCommandMessage("Insufficient parameters.");
-                        else
                         {
-                            for (int i = 1; i < args.Length; i++)
+                            this.client.sendCommandMessage("Insufficient parameters.");
+                            break;
+                        }
+                        for (int i = 1; i < args.Length; i++)
+                        {
+                            Client target = StarshipServer.getClient(args[i]);
+                            if (target == null)
                             {
-                                Client target = StarshipServer.getClient(args[i]);
-                                if (target == null)
+                                this.client.sendCommandMessage(args[i] + " not found.");
+                            }
+                            else
+                            {
+                                TerritoryClaim claim;
+                                if (Claims.TryGetClaim(this.player.loc, out claim))
                                 {
-                                    this.client.sendCommandMessage(args[i] + " not found.");
-                                }
-                                else
-                                {
-                                    TerritoryClaim claim;
-                                    if (Claims.TryGetClaim(world, out claim))
+                                    if (claim.uuid != this.player.uuid)
                                     {
-                                        if (claim.uuid != this.player.uuid)
-                                        {
-                                            this.client.sendCommandMessage("You are not the owner of this world.");
-                                        }
-                                        else
-                                        {
-                                            if (claim.allowed.Remove(target.playerData.uuid))
-                                            {
-                                                this.client.sendCommandMessage("You have revoked " + args[i] + "'s permission to build on this world.");
-                                                Claims.SaveClaim(claim);
-                                            }
-                                            else
-                                            {
-                                                this.client.sendCommandMessage(args[i] + " did not have permission to build on this world.");
-                                            }
-                                        }
+                                        this.client.sendCommandMessage("You are not the owner of this world.");
                                     }
                                     else
                                     {
-                                        this.client.sendCommandMessage("World is unclaimed.");
+                                        if (claim.allowed.Remove(target.playerData.uuid))
+                                        {
+                                            this.client.sendCommandMessage("You have revoked " + args[i] + "'s permission to build on this world.");
+                                            Claims.SaveClaim(claim);
+                                        }
+                                        else
+                                        {
+                                            this.client.sendCommandMessage(args[i] + " did not have permission to build on this world.");
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    this.client.sendCommandMessage("World is unclaimed.");
+                                }
                             }
+                        }
+                        break;
+
+                    case "list":
+                        if (this.player.claimedSystems.Count == 0)
+                        {
+                            this.client.sendCommandMessage("You have no claimed worlds.");
+                        }
+                        else
+                        {
+                            int n = 1;
+                            foreach (var world in this.player.claimedSystems)
+                                this.client.sendCommandMessage(String.Format("{0}: {1}", n++, world.ToString()));
+                        }
+                        break;
+
+                    case "who":
+                        TerritoryClaim t;
+                        if(Claims.TryGetClaim(this.player.loc, out t))
+                        {
+                            if (t.uuid == this.player.uuid)
+                                this.client.sendCommandMessage("You are the owner of this world.");
+                            else
+                                this.client.sendCommandMessage("This world is claimed by " + t.ownerName);
+                        }
+                        else
+                        {
+                            this.client.sendCommandMessage("This world is not claimed.");
                         }
                         break;
 
